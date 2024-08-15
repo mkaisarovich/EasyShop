@@ -11,7 +11,7 @@ class FavoriteController extends Controller
 
     function favorite(Request $request){
         if (auth()->user()) {
-            if ($request->is_favorite == 1) {
+            if ($request->is_favorite == 1) { 
                 $is_exists = Favorite::query()
                     ->where([
                         'user_id' => auth()->id(),

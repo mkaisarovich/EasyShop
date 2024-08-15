@@ -42,6 +42,13 @@ class UserSeeder extends Seeder
                 'role'=>'partner',
                 'city_id'=>2
             ],
+            [
+                'name'=>'Alikhan Baigaziev',
+                'email'=>'admin@gmail.com',
+                'password'=>bcrypt('admin'),
+                'role'=>'admin',
+                'city_id'=>2
+            ],
 
         ];
 

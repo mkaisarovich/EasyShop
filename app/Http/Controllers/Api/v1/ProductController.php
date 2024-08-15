@@ -12,6 +12,7 @@ use App\Models\ProductStructure;
 use App\Models\ProductStyle;
 use App\Models\Size;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -24,11 +25,32 @@ class ProductController extends Controller
         $type = $request->type;
         $sort_price = $request->sort_price;
 
+
       if($type == 0){
-          $data = Product::query()->with('images','sizes')->where('shop_id',$shopId)->where('catalog_category_id',$catalog);
+          $data = Product::query()
+              ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
+              ->with('images','sizes')
+              ->where('products.shop_id',$shopId)
+              ->where('products.catalog_category_id',$catalog)
+              ->leftJoin('favorites', function ($join) {
+                  $join->on('favorites.favorite_id', '=', 'products.id')
+                      ->where('favorites.type', '=', 'catalog')
+                      ->where('favorites.user_id', '=', auth()->user()->id);
+              });
+
       }
          else{
-             $data = Product::query()->with('images','sizes')->where('shop_id',$shopId)->where('catalog_category_id',$catalog)->where('product_category_id',$type);
+             $data = Product::query()
+                 ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
+                 ->with('images','sizes')
+                 ->where('products.shop_id',$shopId)
+                 ->where('products.catalog_category_id',$catalog)
+                 ->where('products.product_category_id',$type)
+                 ->leftJoin('favorites', function ($join) {
+                     $join->on('favorites.favorite_id', '=', 'products.id')
+                         ->where('favorites.type', '=', 'catalog')
+                         ->where('favorites.user_id', '=', auth()->user()->id);
+                 });
          }
 
          if($sort_price){
@@ -55,11 +77,21 @@ class ProductController extends Controller
     function show(CatalogCategory $catalog,Product $product)
     {
 
-      $data = Product::query()->with('images','sizes')->where('products.id',$product->id)->get();
+      $data = Product::query()
+          ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
+          ->with('images','sizes')
+          ->where('products.id',$product->id)
+          ->leftJoin('favorites', function ($join) {
+              $join->on('favorites.favorite_id', '=', 'products.id')
+                  ->where('favorites.type', '=', 'catalog')
+                  ->where('favorites.user_id', '=', auth()->user()->id);
+          })
+          ->get();
 
           return result($data,200,'Product info');
 
     }
+
 
 
     function filter(){
