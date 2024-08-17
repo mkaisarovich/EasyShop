@@ -56,84 +56,119 @@
                             </a>
                         </li>
 
-{{--                <li class="nav-item">--}}
-{{--                    <a href="{{route('admin.super_admin.users.')}}" class="nav-link">--}}
-{{--                        <i class="nav-icon fas fa-user"></i>--}}
-{{--                        <p>--}}
-{{--                            Заказы--}}
-{{--                        </p>--}}
-{{--                    </a>--}}
-{{--                </li>--}}
-
-{{--                <li class="nav-item">--}}
-{{--                    <a href="{{route('admin.super_admin.users.')}}" class="nav-link">--}}
-{{--                        <i class="nav-icon fas fa-user"></i>--}}
-{{--                        <p>--}}
-{{--                            Общая информация--}}
-{{--                        </p>--}}
-{{--                    </a>--}}
-{{--                </li>--}}
-
-{{--                <li class="nav-item">--}}
-{{--                    <a href="{{route('admin.super_admin.users.')}}" class="nav-link">--}}
-{{--                        <i class="nav-icon fas fa-user"></i>--}}
-{{--                        <p>--}}
-{{--                            Документы--}}
-{{--                        </p>--}}
-{{--                    </a>--}}
-{{--                </li>--}}
-
-{{--                <li class="nav-item">--}}
-{{--                    <a href="#" class="nav-link">--}}
-{{--                        <i class="nav-icon fas fa-wrench"></i>--}}
-{{--                        <p>--}}
-{{--                            Общая информация--}}
-{{--                            <i class="right fas fa-angle-left"></i>--}}
-{{--                        </p>--}}
-{{--                    </a>--}}
-
-{{--                    <ul class="nav nav-treeview" style="display: none;">--}}
-{{--                        <li class="nav-item">--}}
-
-
-
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="{{route('admin.super_admin.banners.')}}" class="nav-link">--}}
-{{--                                <i class="far fa-circle nav-icon"></i>--}}
-{{--                                <p>Баннеры</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="{{route('admin.super_admin.cities.')}}" class="nav-link">--}}
-{{--                                <i class="far fa-circle nav-icon"></i>--}}
-{{--                                <p>Список городов</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-
-{{--                        <li class="nav-item">--}}
-{{--                            <a href="#" class="nav-link">--}}
-{{--                                <i class="far fa-circle nav-icon"></i>--}}
-{{--                                <p>Категорий и подкатегорий</p>--}}
-{{--                            </a>--}}
-{{--                        </li>--}}
-
-{{--                </li>--}}
-{{--            </ul>--}}
-{{--            </li>--}}
-
-
-
-
-                <li class="nav-item" style="border-top: 1px solid #4b545c;">
-                    <a href="{{route('admin.logout')}}" class="nav-link mb-3">
-                        <i class="nav-icon fas fa fa-sign-out-alt"></i>
+                <li class="nav-item">
+                    <a href="{{route('admin.super_admin.orders.')}}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
                         <p>
-                            Выйти
+                            Заказы
                         </p>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-wrench"></i>
+                        <p>
+                            Общая информация
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+
+                    <ul class="nav nav-treeview" style="display: none;">
+                        <li class="nav-item">
+
+
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.super_admin.settings.about_us')}}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>О нас</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{route('admin.super_admin.settings.privacy')}}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Политика конфедициальности</p>
+                            </a>
+                        </li>
+
+
+                </li>
+
+
+
+
+
+
+
             </ul>
+            </li>
+
+
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-wrench"></i>
+                    <p>
+                        Фильтрация
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview" style="display: none;">
+                    <li class="nav-item">
+
+
+
+                    <li class="nav-item">
+                        <a href="{{route('admin.super_admin.filter.colors')}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Цветы</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{route('admin.super_admin.filter.seasons')}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Сезоны</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{route('admin.super_admin.filter.styles')}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Стили</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{route('admin.super_admin.filter.structures')}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Структуры</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{route('admin.super_admin.filter.sizes')}}" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Размеры</p>
+                        </a>
+                    </li>
+
+
+            </li>
+
+
+            </ul>
+
+            <li class="nav-item" style="border-top: 1px solid #4b545c;">
+                <a href="{{route('admin.logout')}}" class="nav-link mb-3">
+                    <i class="nav-icon fas fa fa-sign-out-alt"></i>
+                    <p>
+                        Выйти
+                    </p>
+                </a>
+            </li>
         </nav>
         <!-- /.sidebar-menu -->
     </div>

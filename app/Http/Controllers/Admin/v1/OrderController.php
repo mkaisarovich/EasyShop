@@ -7,5 +7,8 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    //
+    function index(){
+        $data = '';
+        return view('admin.pages.super_admin.orders.index', compact('data'));
+    }
 }
