@@ -66,10 +66,19 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="{{route('admin.super_admin.cities.')}}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Список городов
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-wrench"></i>
                         <p>
-                            Общая информация
+                            Настройки
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>

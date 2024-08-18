@@ -7,8 +7,7 @@
 @section('top_right_content')
     @include('admin.includes.modal_create', [
     'route' => 'admin.super_admin.cities.create',
-    'body' =>
-     formInput('name', 'Введите название', label: 'Название',is_required: 1) .
+    'body' =>formInput('name', 'Введите название', label: 'Название',is_required: 1) .
      formSubmitButton('Добавить'),
 ])
 @endsection
@@ -33,7 +32,7 @@
                             <tr>
                                 <td>{{$item->id}}</td>
                                 <td>{{$item->name}}</td>
-                                                                <td>
+                                <td>
                                     @include('admin.includes.modal_update', [
                                         'route' => 'admin.super_admin.cities.edit',
                                         'item_id' => $item->id,
@@ -44,7 +43,7 @@
                                             formSubmitButton('Редактировать'),
                                     ]
                                     )
-                                    @include('admin.includes.delete_button', ['route' => 'admin.super_admin.cities.destroy', 'item_id' => $item->id])
+                                    @include('admin.includes.delete_button', ['route' => 'admin.super_admin.cities.delete', 'item_id' => $item->id])
 
                                 </td>
 

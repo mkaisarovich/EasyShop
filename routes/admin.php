@@ -43,9 +43,22 @@ Route::group(['prefix' => 'super_admin','as' => 'super_admin.', 'middleware' => 
         Route::get('/', [OrderController::class, 'index']);
     });
 
+    Route::group(['prefix' => 'cities', 'as' => 'cities.'], function () {
+        Route::get('/', [\App\Http\Controllers\Admin\v1\CityController::class, 'index']);
+        Route::post('/create', [\App\Http\Controllers\Admin\v1\CityController::class, 'create'])->name('create');
+        Route::put('/edit/{city}', [\App\Http\Controllers\Admin\v1\CityController::class, 'edit'])->name('edit');
+        Route::delete('/delete/{city}', [\App\Http\Controllers\Admin\v1\CityController::class, 'delete'])->name('delete');
+    });
+
     Route::group(['prefix' => 'settings', 'as' => 'settings.'], function () {
         Route::get('/about_us', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'about_us'])->name('about_us');
+        Route::post('/about_us/create', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'createAboutUs'])->name('about_us.create');
+        Route::put('/about_us/edit/{about_us}', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'editAboutUs'])->name('about_us.edit');
+        Route::delete('/about_us/delete/{about_us}', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'deleteAboutUs'])->name('about_us.delete');
         Route::get('/privacy', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'privacy'])->name('privacy');
+        Route::post('/privacy/create', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'createPrivacy'])->name('privacy.create');
+        Route::put('/privacy/edit/{privacy}', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'editPrivacy'])->name('privacy.edit');
+        Route::delete('/privacy/delete/{privacy}', [\App\Http\Controllers\Admin\v1\SettingsController::class, 'deletePrivacy'])->name('privacy.delete');
     });
 
     Route::group(['prefix' => 'filter', 'as' => 'filter.'], function () {
