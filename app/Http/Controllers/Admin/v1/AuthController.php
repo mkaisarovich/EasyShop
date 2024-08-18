@@ -42,4 +42,12 @@ class AuthController extends Controller
 
     }
 
+
+    function logout (Request $request)
+    {
+        session()->flush();
+        return redirect()->route('admin.login');
+    }
+
+
 }
