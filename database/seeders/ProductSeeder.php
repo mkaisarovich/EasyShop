@@ -28,6 +28,7 @@ class ProductSeeder extends Seeder
                 'price'=>10000,
                 'discount_price'=>9990,
                 'shop_id'=>1,
+                'type'=>'t_shirt'
             ],
             [
                 'name'=>'Qazaq Republic 2',
@@ -41,6 +42,7 @@ class ProductSeeder extends Seeder
                 'price'=>10000,
                 'discount_price'=>9990,
                 'shop_id'=>1,
+                'type'=>'t_shirt'
             ],
             [
                 'name'=>'Qazaq Republic 3',
@@ -54,6 +56,7 @@ class ProductSeeder extends Seeder
                 'price'=>10000,
                 'discount_price'=>9990,
                 'shop_id'=>1,
+                'type'=>'t_shirt'
             ],
             [
                 'name'=>'Qazaq Republic 4',
@@ -67,6 +70,7 @@ class ProductSeeder extends Seeder
                 'price'=>10000,
                 'discount_price'=>9990,
                 'shop_id'=>2,
+                'type'=>'t_shirt'
             ],
 
 

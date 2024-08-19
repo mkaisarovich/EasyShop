@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\api\v1\CatalogController;
 use App\Http\Controllers\api\v1\FavoriteController;
 use App\Http\Controllers\api\v1\ProductController;
+use App\Http\Controllers\Api\v1\ProfileController;
 use App\Http\Controllers\Api\v1\ShopController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,21 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
         Route::get('/category', [ProductController::class, 'getCategory']);
         Route::get('/{catalog}/products', [ProductController::class, 'index']);
         Route::get('/{catalog}/products/{product}', [ProductController::class, 'show']);
+    });
+
+
+    Route::prefix('profile')->group(function () {
+        Route::get('', [ProfileController::class, 'index']);
+        Route::get('/subscriptions', [ProfileController::class, 'subscriptions']);
+        Route::get('/about_us', [ProfileController::class, 'about_us']);
+        Route::get('/privacy', [ProfileController::class, 'privacy']);
+    });
+
+    Route::prefix('favorites')->group(function () {
+        Route::get('', [FavoriteController::class, 'index']);
+//        Route::get('/subscriptions', [ProfileController::class, 'subscriptions']);
+//        Route::get('/about_us', [ProfileController::class, 'about_us']);
+//        Route::get('/privacy', [ProfileController::class, 'privacy']);
     });
 
 

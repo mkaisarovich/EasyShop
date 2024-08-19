@@ -24,6 +24,7 @@ return new class extends Migration
             $table->integer('price');
             $table->integer('discount_price')->nullable();
             $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
+            $table->enum('type',['hat','t_shirt','hoody','trousers','bag','shoes','accessory'])->nullable();
             $table->timestamps();
         });
     }

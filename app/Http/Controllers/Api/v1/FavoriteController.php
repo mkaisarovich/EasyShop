@@ -4,14 +4,33 @@ namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Favorite;
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FavoriteController extends Controller
 {
 
+
+
+    function index()
+    {
+        $data = Product::query()
+            ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
+            ->with('images','sizes')
+            ->having('is_favorite', '=', 1)
+            ->leftJoin('favorites', function ($join) {
+                $join->on('favorites.favorite_id', '=', 'products.id')
+                    ->where('favorites.type', '=', 'catalog')
+                    ->where('favorites.user_id', '=', auth()->user()->id);
+            })->get();
+        return result($data,200,'Favorites list');
+
+    }
+
     function favorite(Request $request){
         if (auth()->user()) {
-            if ($request->is_favorite == 1) { 
+            if ($request->is_favorite == 1) {
                 $is_exists = Favorite::query()
                     ->where([
                         'user_id' => auth()->id(),
@@ -43,5 +62,8 @@ class FavoriteController extends Controller
             return result(false, 401, 'Unauthorized');
         }
     }
+
+
+
 
 }
