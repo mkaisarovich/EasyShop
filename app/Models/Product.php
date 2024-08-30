@@ -20,4 +20,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Size::class, 'product_sizes');
     }
+
+    public function fashions()
+    {
+        return $this->belongsToMany(Fashion::class, 'fashion_products', 'product_id', 'fashion_id');
+    }
 }

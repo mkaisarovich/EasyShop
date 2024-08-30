@@ -26,7 +26,9 @@ class DatabaseSeeder extends Seeder
             ProductStructureSeeder::class,
             ProductStyleSeeder::class,
             ProductSeasonSeeder::class,
-            ProductSeeder::class
+            ProductSeeder::class,
+            FashionSeeder::class,
+            FashionProductSeeder::class
         ]);
     }
 }

@@ -17,7 +17,9 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('iin_bin');
+            $table->string('document')->nullable();
             $table->foreignId('city_id')->constrained('cities')->cascadeOnDelete();
+            $table->boolean('moderate')->default(false);
             $table->string('whatsapp')->nullable();
             $table->string('phone_call')->nullable();
             $table->timestamps();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Basket;
 use App\Models\CatalogCategory;
 use App\Models\Color;
 use App\Models\Product;
@@ -34,7 +35,7 @@ class ProductController extends Controller
               ->where('products.catalog_category_id',$catalog)
               ->leftJoin('favorites', function ($join) {
                   $join->on('favorites.favorite_id', '=', 'products.id')
-                      ->where('favorites.type', '=', 'catalog')
+                      ->where('favorites.type', '=', 'product')
                       ->where('favorites.user_id', '=', auth()->user()->id);
               });
 
@@ -48,7 +49,7 @@ class ProductController extends Controller
                  ->where('products.product_category_id',$type)
                  ->leftJoin('favorites', function ($join) {
                      $join->on('favorites.favorite_id', '=', 'products.id')
-                         ->where('favorites.type', '=', 'catalog')
+                         ->where('favorites.type', '=', 'product')
                          ->where('favorites.user_id', '=', auth()->user()->id);
                  });
          }
@@ -83,7 +84,7 @@ class ProductController extends Controller
           ->where('products.id',$product->id)
           ->leftJoin('favorites', function ($join) {
               $join->on('favorites.favorite_id', '=', 'products.id')
-                  ->where('favorites.type', '=', 'catalog')
+                  ->where('favorites.type', '=', 'product')
                   ->where('favorites.user_id', '=', auth()->user()->id);
           })
           ->get();
@@ -110,8 +111,19 @@ class ProductController extends Controller
         ];
 
         return result($data,200,'Filter list');
+    }
 
+    function basket(Request $request,CatalogCategory $catalog,Product $product)
+    {
+        Basket::query()->create([
+            'product_id'=>$product->id,
+            'shop_id'=>$product->shop_id,
+            'user_id'=>auth()->user()->id,
+            'type'=>'product',
+            'product_size'=>$request->product_size
+        ]);
 
+        return result(true,200,'Успешно добавился в корзину');
     }
 
 }

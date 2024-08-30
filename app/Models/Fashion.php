@@ -11,4 +11,9 @@ class Fashion extends Model
 
     protected $guarded = [];
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'fashion_products', 'fashion_id', 'product_id');
+    }
+
 }

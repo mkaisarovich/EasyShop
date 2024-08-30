@@ -46,6 +46,15 @@
                             </a>
                         </li>
 
+                <li class="nav-item">
+                    <a href="{{route('admin.super_admin.moderate.')}}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Модерация
+                        </p>
+                    </a>
+                </li>
+
 
                         <li class="nav-item">
                             <a href="{{route('admin.super_admin.users.')}}" class="nav-link">

@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\v1\BasketController;
 use App\Http\Controllers\api\v1\CatalogController;
+use App\Http\Controllers\Api\v1\FashionController;
 use App\Http\Controllers\api\v1\FavoriteController;
 use App\Http\Controllers\api\v1\ProductController;
 use App\Http\Controllers\Api\v1\ProfileController;
@@ -45,12 +47,25 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
     });
 
 
+    Route::prefix('fashions')->group(function () {
+        Route::get('', [FashionController::class, 'index']);
+        Route::get('/products', [FashionController::class, 'products']);
+        Route::get('/product_category', [FashionController::class, 'product_category']);
+        Route::post('/create', [FashionController::class, 'create']);
+    });
+
+    Route::prefix('baskets')->group(function () {
+        Route::get('', [BasketController::class, 'index']);
+    });
+
+
 
     Route::prefix('catalog')->group(function () {
         Route::get('/filter', [ProductController::class, 'filter']);
         Route::get('/category', [ProductController::class, 'getCategory']);
         Route::get('/{catalog}/products', [ProductController::class, 'index']);
         Route::get('/{catalog}/products/{product}', [ProductController::class, 'show']);
+        Route::post('/{catalog}/products/{product}', [ProductController::class, 'basket']);
     });
 
 

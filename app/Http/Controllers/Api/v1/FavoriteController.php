@@ -21,9 +21,10 @@ class FavoriteController extends Controller
             ->having('is_favorite', '=', 1)
             ->leftJoin('favorites', function ($join) {
                 $join->on('favorites.favorite_id', '=', 'products.id')
-                    ->where('favorites.type', '=', 'catalog')
+                    ->where('favorites.type', '=', 'product')
                     ->where('favorites.user_id', '=', auth()->user()->id);
-            })->get();
+            })
+            ->get();
         return result($data,200,'Favorites list');
 
     }

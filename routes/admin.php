@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\v1\AuthController;
 use App\Http\Controllers\Admin\v1\MainController;
+use App\Http\Controllers\Admin\v1\ModerateController;
 use App\Http\Controllers\Admin\v1\OrderController;
 use App\Http\Controllers\Admin\v1\PartnerController;
 use App\Http\Controllers\Admin\v1\UserController;
@@ -33,6 +34,11 @@ Route::group(['prefix' => 'super_admin','as' => 'super_admin.', 'middleware' => 
 
     Route::group(['prefix' => 'users', 'as' => 'users.'], function () {
         Route::get('/', [UserController::class, 'index']);
+    });
+
+    Route::group(['prefix' => 'moderate', 'as' => 'moderate.'], function () {
+        Route::get('/', [ModerateController::class, 'index']);
+        Route::post('/status/{shop}', [ModerateController::class, 'status'])->name('status');
     });
 
     Route::group(['prefix' => 'partners', 'as' => 'partners.'], function () {

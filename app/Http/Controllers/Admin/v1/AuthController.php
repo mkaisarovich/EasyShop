@@ -17,12 +17,6 @@ class AuthController extends Controller
                 'password' => 'required',
             ]);
             $email = $request->email;
-//            $phone = preg_replace('/[^0-9]/', '', $phone);
-
-
-//            if (substr($phone, 0, 1) === '7') {
-//                $phone = substr($phone, 1);
-//            }
 
             if (Auth::attempt(['email' => $email,'password' => $request->password])) {
                 if (auth()->user()->role == 'admin'){
