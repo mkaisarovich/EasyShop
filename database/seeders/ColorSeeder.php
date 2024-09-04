@@ -16,15 +16,19 @@ class ColorSeeder extends Seeder
         $inits = [
             [
                 'name'=>'Черный',
+                'hex'=>'#000000',
             ],
             [
                 'name'=>'Белый',
+                'hex'=>'#FFFFFF',
             ],
             [
                 'name'=>'Розовый',
+                'hex'=>'#FFC0CB',
             ],
             [
                 'name'=>'Синий',
+                'hex'=>'#ADD8E6',
             ],
         ];
 
