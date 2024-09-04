@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\AboutUs;
 use App\Models\Privacy;
+use App\Models\Shop;
 use App\Models\Subscribe;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -33,6 +34,15 @@ class ProfileController extends Controller
     function privacy(){
         $data = Privacy::query()->get();
         return result($data,200,'Privacy');
+    }
+
+
+
+
+
+    function indexAdmin(){
+        $shop = Shop::query()->where('user_id',auth()->user()->id)->get();
+        return result($shop,200,'Profile Details');
     }
 
 }

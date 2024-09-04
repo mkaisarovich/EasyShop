@@ -90,3 +90,29 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
 
 });
+
+
+
+Route::middleware(['auth:sanctum'])->prefix("admin")->group(function () {
+
+
+
+
+
+
+
+
+
+
+
+    Route::prefix('profile')->group(function () {
+        Route::get('', [ProfileController::class, 'indexAdmin']);
+//        Route::get('/subscriptions', [ProfileController::class, 'subscriptions']);
+//        Route::get('/about_us', [ProfileController::class, 'about_us']);
+//        Route::get('/privacy', [ProfileController::class, 'privacy']);
+    });
+
+
+
+
+});
