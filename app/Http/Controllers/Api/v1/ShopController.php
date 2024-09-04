@@ -22,12 +22,27 @@ class ShopController extends Controller
         }
 
         $data = $data->get();
+        $userId = auth()->user()->id;
+
+// Loop through each shop and check subscription status
+        foreach ($data as $shop) {
+            $subscribe = Subscribe::query()
+                ->where('user_id', $userId)
+                ->where('shop_id', $shop->id)
+                ->exists();
+            $shop->subscribe = $subscribe ? 1 : 0;
+        }
+
+//        return $data->get();
+
+
         return result($data,200,'Список магазинов');
     }
 
     function show(Shop $shop){
         $subscribe = Subscribe::query()->where('user_id',auth()->user()->id)->where('shop_id',$shop->id)->exists();
-        $shop->subscribe = $subscribe ? true : false;
+        $shop->subscribe = $subscribe ? 1 : 0;
+//        $shop->save();
 
 
         $categories = Category::all();
