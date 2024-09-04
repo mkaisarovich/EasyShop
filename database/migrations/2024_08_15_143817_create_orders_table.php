@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
+            $table->time('time');
+            $table->enum('type',['product','fashion']);
+            $table->unsignedBigInteger('selled_id')->nullable();
             $table->timestamps();
         });
     }

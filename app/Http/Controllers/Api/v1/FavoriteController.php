@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Fashion;
 use App\Models\Favorite;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class FavoriteController extends Controller
 
     function index()
     {
-        $data = Product::query()
+        $products = Product::query()
             ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
             ->with('images','sizes')
             ->having('is_favorite', '=', 1)
@@ -25,6 +26,23 @@ class FavoriteController extends Controller
                     ->where('favorites.user_id', '=', auth()->user()->id);
             })
             ->get();
+
+        $fashions = Fashion::query()->select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),'baskets.type as basket_type')
+            ->with('products')
+            ->withCount('products as count_products')
+            ->leftJoin('baskets','baskets.fashion_id','=','fashions.id')
+            ->where('baskets.user_id',auth()->user()->id)
+            ->where('baskets.type','fashion')
+            ->leftJoin('favorites', function ($join) {
+                $join->on('favorites.favorite_id', '=', 'fashions.id')
+                    ->where('favorites.type', '=', 'fashion')
+                    ->where('favorites.user_id', '=', auth()->user()->id);
+            })->get();
+
+        $data = [
+            'products' => $products,
+            'fashions'=>$fashions
+        ];
         return result($data,200,'Favorites list');
 
     }

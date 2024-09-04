@@ -19,7 +19,6 @@ class ProfileController extends Controller
 
     function subscriptions()
     {
-
         $data = Subscribe::query()->with('shop')->where('user_id',auth()->user()->id)->get();
         return result($data,200,'Subscriptions');
 
