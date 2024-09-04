@@ -17,7 +17,9 @@ class FavoriteController extends Controller
     function index()
     {
         $products = Product::query()
-            ->select('products.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
+            ->select('products.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                'product_styles.name as style_name','product_structures.name as structure_name',
+                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
             ->with('images', 'sizes')
             ->having('is_favorite', '=', 1)
             ->leftJoin('favorites', function ($join) {
@@ -25,6 +27,11 @@ class FavoriteController extends Controller
                     ->where('favorites.type', '=', 'product')
                     ->where('favorites.user_id', '=', auth()->user()->id);
             })
+            ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+            ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+            ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
             ->get();
 
         $fashions = Fashion::query()->select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'), 'baskets.type as basket_type')
@@ -38,6 +45,42 @@ class FavoriteController extends Controller
                     ->where('favorites.type', '=', 'fashion')
                     ->where('favorites.user_id', '=', auth()->user()->id);
             })->get();
+
+
+        $products->transform(function ($item) {
+            $item->style = [
+                'id' => $item->style_id,
+                'name' => $item->style_name,
+            ];
+            unset($item->style_id, $item->style_name);
+
+            $item->structure = [
+                'id' => $item->struture_id,
+                'name' => $item->structure_name,
+            ];
+            unset($item->struture_id, $item->structure_name);
+
+            $item->season = [
+                'id' => $item->season_id,
+                'name' => $item->season_name,
+            ];
+            unset($item->season_id, $item->season_name);
+
+            $item->catalog_category = [
+                'id' => $item->catalog_category_id,
+                'name' => $item->catalog_category_name,
+            ];
+            unset($item->catalog_category_id, $item->catalog_category_name);
+
+            $item->product_category = [
+                'id' => $item->product_category_id,
+                'name' => $item->product_category_name,
+            ];
+            unset($item->product_category_id, $item->product_category_name);
+
+            return $item;
+        });
+
 
         $data = [
             'products' => $products,
