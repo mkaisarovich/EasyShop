@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('price');
             $table->integer('discount_price')->nullable();
             $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

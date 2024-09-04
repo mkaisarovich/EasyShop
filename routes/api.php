@@ -98,20 +98,15 @@ Route::middleware(['auth:sanctum'])->prefix("admin")->group(function () {
 
 
 
-
-
-
-
-
-
-
     Route::prefix('profile')->group(function () {
         Route::get('', [ProfileController::class, 'indexAdmin']);
-//        Route::get('/subscriptions', [ProfileController::class, 'subscriptions']);
-//        Route::get('/about_us', [ProfileController::class, 'about_us']);
-//        Route::get('/privacy', [ProfileController::class, 'privacy']);
+        Route::post('/edit', [ProfileController::class, 'editAdmin']);
     });
 
+    Route::prefix('products')->group(function () {
+        Route::get('', [\App\Http\Controllers\Api\v1\AdminController::class, 'indexProducts']);
+//        Route::post('/edit', [ProfileController::class, 'editAdmin']);
+    });
 
 
 

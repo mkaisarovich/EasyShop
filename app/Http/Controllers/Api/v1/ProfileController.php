@@ -8,6 +8,7 @@ use App\Models\Privacy;
 use App\Models\Shop;
 use App\Models\Subscribe;
 use App\Models\User;
+use App\Services\ShopService;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller
@@ -41,8 +42,18 @@ class ProfileController extends Controller
 
 
     function indexAdmin(){
-        $shop = Shop::query()->where('user_id',auth()->user()->id)->get();
-        return result($shop,200,'Profile Details');
+//        $shop = Shop::query()->where('user_id',auth()->user()->id)->get();
+//        return 123;
+//        return ShopService::shop();
+        return result(ShopService::shop(),200,'Profile Details');
     }
 
+
+    function editAdmin(Request $request)
+    {
+    Shop::query()->where('id',ShopService::shop()->id)->update([
+        'whatsapp'=>$request->get('whatsapp'),
+    ]);
+        return result(ShopService::shop(),200,'Profile Details Changed');
+    }
 }
