@@ -91,42 +91,59 @@ class FashionController extends Controller
     function create(Request $request){
         $shopId = $request->get('shop_id');
         $shop = Shop::query()->findOrFail($shopId);
+        if($request->fashion_type){
 
-        $fashionArray = [
-            'name'=>'Образ номер ' . random_int(0, 999),
-            'user_id'=>auth()->user()->id,
-            'season_id'=>$request->get('season_id'),
-            'style_id'=>$request->get('style_id'),
-            'price'=>$request->get('price'),
-            'discount_price'=>$request->get('discount_price'),
-            'shop_id'=>$shop->id
-        ];
 
-        $fashion = Fashion::query()->create($fashionArray);
+            $fashionArray = [
+                'name'=>'Образ номер ' . random_int(0, 999),
+                'user_id'=>auth()->user()->id,
+                'season_id'=>$request->get('season_id'),
+                'style_id'=>$request->get('style_id'),
+                'price'=>$request->get('price'),
+                'discount_price'=>$request->get('discount_price'),
+                'shop_id'=>$shop->id
+            ];
 
-        if($request->products_id){
-            foreach ($request->products_id as $product_id){
-                FashionProduct::query()->create([
-                    'fashion_id'=>$fashion->id,
-                    'product_id'=>$product_id
-                ]);
+            $fashion = Fashion::query()->create($fashionArray);
+
+            if($request->products_id){
+                foreach ($request->products_id as $product_id){
+                    FashionProduct::query()->create([
+                        'fashion_id'=>$fashion->id,
+                        'product_id'=>$product_id
+                    ]);
+                }
             }
+
+            Basket::query()->create([
+                'type'=>'fashion',
+                'fashion_id'=>$fashion->id,
+                'user_id'=>auth()->user()->id,
+                'shop_id'=>$shop->id
+            ]);
+
+            $data = Fashion::query()
+                ->select('fashions.*')
+                ->with('products')
+                ->where('fashions.id', $fashion->id)
+                ->withCount('products as count_products')->get();
+
+            return result($data,200,'Успешно создался образ и добавился в корзину');
+        }else{
+            Basket::query()->create([
+                'type'=>'fashion',
+                'fashion_id'=>$request->fashion_id,
+                'user_id'=>auth()->user()->id,
+                'shop_id'=>$shop->id
+            ]);
+            $data = Fashion::query()
+                ->select('fashions.*')
+                ->with('products')
+                ->where('fashions.id', $request->fashion_id)
+                ->withCount('products as count_products')->get();
+            return result($data,200,'Успешно добавился в корзину');
         }
 
-        Basket::query()->create([
-            'type'=>'fashion',
-            'fashion_id'=>$fashion->id,
-            'user_id'=>auth()->user()->id,
-            'shop_id'=>$shop->id
-        ]);
-
-        $data = Fashion::query()
-            ->select('fashions.*')
-            ->with('products')
-            ->where('fashions.id', $fashion->id)
-            ->withCount('products as count_products')->get();
-
-        return result($data,200,'Успешно создался образ и добавился в корзину');
 
     }
 

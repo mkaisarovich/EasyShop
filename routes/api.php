@@ -105,6 +105,10 @@ Route::middleware(['auth:sanctum'])->prefix("admin")->group(function () {
 
     Route::prefix('products')->group(function () {
         Route::get('', [\App\Http\Controllers\Api\v1\AdminController::class, 'indexProducts']);
+        Route::delete('/delete', [\App\Http\Controllers\Api\v1\AdminController::class, 'deleteProduct']);
+        Route::get('/switch', [\App\Http\Controllers\Api\v1\AdminController::class, 'switchProduct']);
+        Route::post('/create', [\App\Http\Controllers\Api\v1\AdminController::class, 'createProduct']);
+        Route::post('/edit', [\App\Http\Controllers\Api\v1\AdminController::class, 'editProduct']);
 //        Route::post('/edit', [ProfileController::class, 'editAdmin']);
     });
 
