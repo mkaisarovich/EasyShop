@@ -17,6 +17,7 @@ return new class extends Migration
             $table->time('time');
             $table->enum('type',['product','fashion']);
             $table->unsignedBigInteger('selled_id')->nullable();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }

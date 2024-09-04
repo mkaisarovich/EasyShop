@@ -85,6 +85,7 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
 
         Route::post('/favorite', [FavoriteController::class, 'favorite']);
+        Route::post('/order', [FavoriteController::class, 'order']);
 
 
 
