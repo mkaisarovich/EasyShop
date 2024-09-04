@@ -2,10 +2,10 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\v1\BasketController;
-use App\Http\Controllers\api\v1\CatalogController;
+use App\Http\Controllers\Api\v1\CatalogController;
 use App\Http\Controllers\Api\v1\FashionController;
-use App\Http\Controllers\api\v1\FavoriteController;
-use App\Http\Controllers\api\v1\ProductController;
+use App\Http\Controllers\Api\v1\FavoriteController;
+use App\Http\Controllers\Api\v1\ProductController;
 use App\Http\Controllers\Api\v1\ProfileController;
 use App\Http\Controllers\Api\v1\ShopController;
 use Illuminate\Http\Request;
