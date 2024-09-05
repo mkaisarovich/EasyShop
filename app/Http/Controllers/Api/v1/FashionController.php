@@ -21,7 +21,8 @@ class FashionController extends Controller
         $shop = Shop::query()->findOrFail($shopId);
 
         $fashions = Fashion::query()
-            ->select('fashions.*', DB::raw('COALESCE(discount_price, price) as effective_price'), DB::raw('(favorites.id IS NOT NULL) as is_favorite'))
+            ->select('fashions.*', DB::raw('COALESCE(discount_price, price) as effective_price'), DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                'product_styles.name as style_name','product_seasons.name as season_name')
             ->with(['products' => function ($query) {
                 $query->leftJoin('favorites as product_favorites', function ($join) {
                     $join->on('product_favorites.favorite_id', '=', 'products.id')
@@ -36,7 +37,9 @@ class FashionController extends Controller
                 $join->on('favorites.favorite_id', '=', 'fashions.id')
                     ->where('favorites.type', '=', 'fashion')
                     ->where('favorites.user_id', '=', auth()->user()->id);
-            });
+            })
+            ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+            ->leftJoin('product_seasons','products.season_id','=','product_seasons.id');
 
 
         $sort_price = $request->get('sort_price');
@@ -57,6 +60,22 @@ class FashionController extends Controller
         });
 
             $fashions=$fashions->get();
+
+        $fashions->transform(function ($item) {
+            $item->style = [
+                'id' => $item->style_id,
+                'name' => $item->style_name,
+            ];
+            unset($item->style_id, $item->style_name);
+
+            $item->season = [
+                'id' => $item->season_id,
+                'name' => $item->season_name,
+            ];
+            unset($item->season_id, $item->season_name);
+
+            return $item;
+        });
 
         return result($fashions,200,'Список образ и капсул');
     }
