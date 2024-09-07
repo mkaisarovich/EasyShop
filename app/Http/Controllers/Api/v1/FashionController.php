@@ -29,7 +29,11 @@ class FashionController extends Controller
                         ->where('product_favorites.type', '=', 'product')
                         ->where('product_favorites.user_id', '=', auth()->user()->id);
                 })
-                    ->select('products.*',DB::raw('(product_favorites.id IS NOT NULL) as product_favorite_id'));
+                    ->leftJoin('product_styles', 'products.style_id', '=', 'product_styles.id')
+                    ->leftJoin('product_seasons', 'products.season_id', '=', 'product_seasons.id')
+                    ->leftJoin('product_structures', 'products.struture_id', '=', 'product_structures.id')
+                    ->select('products.*',DB::raw('(product_favorites.id IS NOT NULL) as product_favorite_id'),'product_styles.name as style_name',
+                        'product_seasons.name as season_name','product_structures.name as structure_name');
             }])
             ->where('fashions.shop_id', $shop->id)
             ->withCount('products as count_products')
@@ -52,9 +56,6 @@ class FashionController extends Controller
         $fashions->when($season_id, function ($query, $season_id) {
             return $query->where('season_id', $season_id);
         });
-//        $fashions->when($sort_price, function ($query, $sort_price) {
-//            return $query->orderBy('price', $sort_price);
-//        });
         $fashions->when($sort_price, function ($query, $sort_price) {
             return $query->orderBy('effective_price', $sort_price);
         });
@@ -73,6 +74,28 @@ class FashionController extends Controller
                 'name' => $item->season_name,
             ];
             unset($item->season_id, $item->season_name);
+
+            $item->products->transform(function ($product) {
+                $product->style = [
+                    'id' => $product->style_id,
+                    'name' => $product->style_name,
+                ];
+                unset($product->style_id, $product->style_name);
+
+                $product->season = [
+                    'id' => $product->season_id,
+                    'name' => $product->season_name,
+                ];
+                unset($product->season_id, $product->season_name);
+
+                $product->structure = [
+                    'id' => $product->struture_id,
+                    'name' => $product->structure_name,
+                ];
+                unset($product->struture_id, $product->structure_name);
+
+                return $product;
+            });
 
             return $item;
         });
