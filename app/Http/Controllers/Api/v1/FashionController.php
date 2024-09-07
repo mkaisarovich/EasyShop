@@ -38,8 +38,8 @@ class FashionController extends Controller
                     ->where('favorites.type', '=', 'fashion')
                     ->where('favorites.user_id', '=', auth()->user()->id);
             })
-            ->leftJoin('product_styles','products.style_id','=','product_styles.id')
-            ->leftJoin('product_seasons','products.season_id','=','product_seasons.id');
+            ->leftJoin('product_styles','fashions.style_id','=','product_styles.id')
+            ->leftJoin('product_seasons','fashions.season_id','=','product_seasons.id');
 
 
         $sort_price = $request->get('sort_price');
