@@ -28,7 +28,8 @@ class DatabaseSeeder extends Seeder
             ProductSeasonSeeder::class,
             ProductSeeder::class,
             FashionSeeder::class,
-            FashionProductSeeder::class
+            FashionProductSeeder::class,
+            MallSeeder::class
         ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Mall;
 use App\Models\Shop;
 use App\Models\Subscribe;
 use Illuminate\Http\Request;
@@ -19,6 +20,9 @@ class ShopController extends Controller
         }
         if($request->has('city_id')){
             $data->where('city_id',$request->city_id);
+        }
+        if($request->has('mall_id')){
+            $data->where('mall_id',$request->mall_id);
         }
 
         $data = $data->get();
@@ -70,6 +74,20 @@ class ShopController extends Controller
 
         return result(true,200,'Success');
 
+    }
+
+    function malls(Request $request){
+
+        $data = Mall::query();
+        if ($request->search) {
+            $data->where('name', 'like', '%' . $request->search . '%');
+        }
+        if($request->city_id){
+            $data->where('city_id',$request->city_id);
+        }
+
+        $data = $data->get();
+        return result($data,200,'Malls');
     }
 
 

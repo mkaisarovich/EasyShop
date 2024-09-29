@@ -39,6 +39,8 @@ Route::prefix('auth')->group(function (){
 
 Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
+    Route::get('/malls', [ShopController::class, 'malls']);
+
     Route::prefix('shops')->group(function () {
         Route::get('', [ShopController::class, 'index']);
         Route::get('/{shop}', [ShopController::class, 'show']);

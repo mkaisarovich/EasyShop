@@ -20,7 +20,9 @@ class ShopSeeder extends Seeder
                 'name'=>'Zara',
                 'user_id'=>3,
                 'iin_bin'=>"010203501203",
+                'address'=>"ТЦ Mega Almaty, Ул Розыбакиева 247 а",
                 'city_id'=>1,
+                'mall_id'=>1,
                 'avatar'=>$this->getAvatarPath('z3twpjpr444795.jpg')
             ],
             [
@@ -28,6 +30,8 @@ class ShopSeeder extends Seeder
                 'user_id'=>4,
                 'iin_bin'=>"010203571203",
                 'city_id'=>1,
+                'address'=>"ТЦ Mega Almaty, Ул Розыбакиева 247 а",
+                'mall_id'=>1,
                 'avatar'=>$this->getAvatarPath('HM-Share-Image.jpg')
             ],
 
