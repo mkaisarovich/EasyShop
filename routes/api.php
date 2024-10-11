@@ -60,8 +60,6 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
         Route::get('', [BasketController::class, 'index']);
     });
 
-
-
     Route::prefix('catalog')->group(function () {
         Route::get('/filter', [ProductController::class, 'filter']);
         Route::get('/category', [ProductController::class, 'getCategory']);
@@ -76,6 +74,7 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
         Route::get('/subscriptions', [ProfileController::class, 'subscriptions']);
         Route::get('/about_us', [ProfileController::class, 'about_us']);
         Route::get('/privacy', [ProfileController::class, 'privacy']);
+        Route::post('/favorite_sizes', [ProfileController::class, 'favoriteSize']);
     });
 
     Route::prefix('favorites')->group(function () {
@@ -84,7 +83,6 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 //        Route::get('/about_us', [ProfileController::class, 'about_us']);
 //        Route::get('/privacy', [ProfileController::class, 'privacy']);
     });
-
 
         Route::post('/favorite', [FavoriteController::class, 'favorite']);
         Route::post('/order', [FavoriteController::class, 'order']);

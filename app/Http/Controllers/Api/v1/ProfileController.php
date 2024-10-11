@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Models\AboutUs;
+use App\Models\FavoriteSize;
 use App\Models\Privacy;
 use App\Models\Shop;
+use App\Models\Size;
 use App\Models\Subscribe;
 use App\Models\User;
 use App\Services\ShopService;
@@ -16,7 +18,12 @@ class ProfileController extends Controller
 
     function index(){
         $data = User::query()->find(auth()->user()->id);
-        return result($data,200,'Profile Details');
+
+        $array = [
+            'user' => $data,
+            'favorite_sizes' => FavoriteSize::query()->where('user_id',auth()->user()->id)->get(),
+        ];
+        return result($array,200,'Profile Details');
     }
 
     function subscriptions()
@@ -56,4 +63,24 @@ class ProfileController extends Controller
     ]);
         return result(ShopService::shop(),200,'Profile Details Changed');
     }
+
+    function favoriteSize(Request $request){
+        $sizes = $request->sizes;
+
+        foreach ($sizes as $size){
+            FavoriteSize::query()->updateOrInsert([
+                'user_id'=>auth()->user()->id,
+                'size_id'=>$size,
+            ],[
+                'type'=>Size::query()->select('type')->where('id',$size)->value('type')
+            ]);
+        }
+
+        return result(true,200,'Favorite Size changed');
+
+
+
+    }
+
+
 }

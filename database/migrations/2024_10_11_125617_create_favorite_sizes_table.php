@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sizes', function (Blueprint $table) {
+        Schema::create('favorite_sizes', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('size_id')->constrained('sizes')->cascadeOnDelete();
             $table->enum('type',['clothes','shoes','trousers']);
-            $table->timestamps();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sizes');
+        Schema::dropIfExists('favorite_sizes');
     }
 };

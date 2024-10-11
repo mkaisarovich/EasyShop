@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Basket;
 use App\Models\CatalogCategory;
 use App\Models\Color;
+use App\Models\FavoriteSize;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductSeason;
@@ -25,49 +26,156 @@ class ProductController extends Controller
         $shopId = $request->shop_id;
         $type = $request->type;
         $sort_price = $request->sort_price;
+        $existsFavoriteSize = FavoriteSize::query()->where('user_id',auth()->user()->id)->exists();
+
+      if($request->sizes){
+          if($type == 0){
+              //$request->sizes is [1,3,4]
+
+              $data = Product::query()
+                  ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                      'product_styles.name as style_name','product_structures.name as structure_name',
+                      'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                  ->with('images','sizes')
+                  ->where('products.shop_id',$shopId)
+                  ->where('products.catalog_category_id',$catalog)
+                  ->leftJoin('favorites', function ($join) {
+                      $join->on('favorites.favorite_id', '=', 'products.id')
+                          ->where('favorites.type', '=', 'product')
+                          ->where('favorites.user_id', '=', auth()->user()->id);
+                  })
+                  ->whereIn('products.size_id',$request->sizes)
+                  ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+                  ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+                  ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+                  ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+                  ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+
+          }
+          else{
+              $data = Product::query()
+                  ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                      'product_styles.name as style_name','product_structures.name as structure_name',
+                      'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                  ->with('images','sizes')
+                  ->where('products.shop_id',$shopId)
+                  ->where('products.catalog_category_id',$catalog)
+                  ->where('products.product_category_id',$type)
+                  ->leftJoin('favorites', function ($join) {
+                      $join->on('favorites.favorite_id', '=', 'products.id')
+                          ->where('favorites.type', '=', 'product')
+                          ->where('favorites.user_id', '=', auth()->user()->id);
+                  })
+                  ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+                  ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+                  ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+                  ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+                  ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+              ;
+          }
+      }else{
+          if($existsFavoriteSize){
+
+              $sizes = FavoriteSize::query()
+                  ->where('user_id',auth()->user()->id)
+                  ->pluck('id')
+                  ->toArray();
+
+              if($type == 0){
+                  $data = Product::query()
+                      ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                          'product_styles.name as style_name','product_structures.name as structure_name',
+                          'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                      ->with('images','sizes')
+                      ->where('products.shop_id',$shopId)
+                      ->where('products.catalog_category_id',$catalog)
+                      ->leftJoin('favorites', function ($join) {
+                          $join->on('favorites.favorite_id', '=', 'products.id')
+                              ->where('favorites.type', '=', 'product')
+                              ->where('favorites.user_id', '=', auth()->user()->id);
+                      })
+
+                      ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+                      ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+                      ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+                      ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+                      ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+
+              }
+              else{
+                  $data = Product::query()
+                      ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                          'product_styles.name as style_name','product_structures.name as structure_name',
+                          'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                      ->with('images','sizes')
+                      ->where('products.shop_id',$shopId)
+                      ->where('products.catalog_category_id',$catalog)
+                      ->where('products.product_category_id',$type)
+                      ->leftJoin('favorites', function ($join) {
+                          $join->on('favorites.favorite_id', '=', 'products.id')
+                              ->where('favorites.type', '=', 'product')
+                              ->where('favorites.user_id', '=', auth()->user()->id);
+                      })
+                      ->whereIn('products.size_id',$sizes)
+                      ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+                      ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+                      ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+                      ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+                      ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+                  ;
+              }
+          }else{
+              if($type == 0){
+                  $data = Product::query()
+                      ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                          'product_styles.name as style_name','product_structures.name as structure_name',
+                          'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                      ->with('images','sizes')
+                      ->where('products.shop_id',$shopId)
+                      ->where('products.catalog_category_id',$catalog)
+                      ->leftJoin('favorites', function ($join) {
+                          $join->on('favorites.favorite_id', '=', 'products.id')
+                              ->where('favorites.type', '=', 'product')
+                              ->where('favorites.user_id', '=', auth()->user()->id);
+                      })
+                      ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+                      ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+                      ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+                      ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+                      ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+
+              }
+              else{
+                  $data = Product::query()
+                      ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                          'product_styles.name as style_name','product_structures.name as structure_name',
+                          'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                      ->with('images','sizes')
+                      ->where('products.shop_id',$shopId)
+                      ->where('products.catalog_category_id',$catalog)
+                      ->where('products.product_category_id',$type)
+                      ->leftJoin('favorites', function ($join) {
+                          $join->on('favorites.favorite_id', '=', 'products.id')
+                              ->where('favorites.type', '=', 'product')
+                              ->where('favorites.user_id', '=', auth()->user()->id);
+                      })
+                      ->leftJoin('product_styles','products.style_id','=','product_styles.id')
+                      ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
+                      ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
+                      ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
+                      ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+                  ;
+              }
+          }
+        }
 
 
-      if($type == 0){
-          $data = Product::query()
-              ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
-                  'product_styles.name as style_name','product_structures.name as structure_name',
-                  'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
-              ->with('images','sizes')
-              ->where('products.shop_id',$shopId)
-              ->where('products.catalog_category_id',$catalog)
-              ->leftJoin('favorites', function ($join) {
-                  $join->on('favorites.favorite_id', '=', 'products.id')
-                      ->where('favorites.type', '=', 'product')
-                      ->where('favorites.user_id', '=', auth()->user()->id);
-              })
-              ->leftJoin('product_styles','products.style_id','=','product_styles.id')
-              ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
-              ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
-              ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-              ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
 
-      }
-         else{
-             $data = Product::query()
-                 ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
-                     'product_styles.name as style_name','product_structures.name as structure_name',
-                     'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
-                 ->with('images','sizes')
-                 ->where('products.shop_id',$shopId)
-                 ->where('products.catalog_category_id',$catalog)
-                 ->where('products.product_category_id',$type)
-                 ->leftJoin('favorites', function ($join) {
-                     $join->on('favorites.favorite_id', '=', 'products.id')
-                         ->where('favorites.type', '=', 'product')
-                         ->where('favorites.user_id', '=', auth()->user()->id);
-                 })
-                 ->leftJoin('product_styles','products.style_id','=','product_styles.id')
-                 ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
-                 ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
-                 ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                 ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
-             ;
-         }
+
+
+
+
+
 
          if($sort_price){
              $data->orderBy('products.price',$sort_price);

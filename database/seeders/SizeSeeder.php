@@ -50,6 +50,18 @@ class SizeSeeder extends Seeder
                 'name'=>'6XL',
                 'type'=>'clothes'
             ],
+            [
+                'name'=>'40',
+                'type'=>'shoes'
+            ],
+            [
+                'name'=>'41',
+                'type'=>'shoes'
+            ],
+            [
+                'name'=>'M',
+                'type'=>'trousers'
+            ],
         ];
 
         Size::insert($inits);
