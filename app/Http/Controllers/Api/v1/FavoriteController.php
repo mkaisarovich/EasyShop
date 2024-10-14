@@ -19,7 +19,7 @@ class FavoriteController extends Controller
         $products = Product::query()
             ->select('products.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                 'product_styles.name as style_name','product_structures.name as structure_name',
-                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name','product_categories.name as product_category_name',)
             ->with('images', 'sizes')
             ->having('is_favorite', '=', 1)
             ->leftJoin('favorites', function ($join) {
@@ -34,7 +34,8 @@ class FavoriteController extends Controller
             ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
             ->get();
 
-        $fashions = Fashion::query()->select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'), 'baskets.type as basket_type')
+        $fashions = Fashion::query()->select('fashions.*',
+            DB::raw('(favorites.id IS NOT NULL) as is_favorite'), 'baskets.type as basket_type')
             ->with('products')
             ->withCount('products as count_products')
             ->leftJoin('baskets', 'baskets.fashion_id', '=', 'fashions.id')
