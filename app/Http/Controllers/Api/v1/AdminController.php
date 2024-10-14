@@ -81,14 +81,14 @@ class AdminController extends Controller
             $product = Product::query()->create($dataArray);
 
             if($product and ($request->sizes or $request->images )){
-                foreach ($request->sizes as $size){
+                for ($i = 0;$i<sizeof($request->sizes);$i++){
                     ProductSize::query()->create([
-                       'size_id'=>$size,
+                       'size_id'=>(int)$request->sizes[$i],
                         'product_id'=>$product->id
                     ]);
                 }
 
-                foreach ($request->images as $image){
+                foreach($request->images as $image){
                     ProductImage::query()->create([
                         'product_id'=>$product->id,
                         'image'=>config('app.url') . '/storage/' . Storage::disk('public')->put("products/image", $image)
