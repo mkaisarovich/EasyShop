@@ -17,13 +17,14 @@ class ProfileController extends Controller
 {
 
     function index(){
-        $data = User::query()->find(auth()->user()->id);
+        $user = User::query()->find(auth()->user()->id)->toArray(); // Convert user to array
+        $favoriteSizes = FavoriteSize::query()->where('user_id', auth()->user()->id)->get();
 
-        $array = [
-            'user' => $data,
-            'favorite_sizes' => FavoriteSize::query()->where('user_id',auth()->user()->id)->get(),
-        ];
-        return result($array,200,'Profile Details');
+//        $array = [
+//            'user' => $data,
+//            'favorite_sizes' => FavoriteSize::query()->where('user_id',auth()->user()->id)->get(),
+//        ];
+        return result( array_merge($user, ['favorite_sizes' => $favoriteSizes]),200,'Profile Details');
     }
 
     function subscriptions()
