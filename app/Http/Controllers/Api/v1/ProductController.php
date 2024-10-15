@@ -27,6 +27,10 @@ class ProductController extends Controller
         $type = $request->type;
         $sort_price = $request->sort_price;
         $existsFavoriteSize = FavoriteSize::query()->where('user_id',auth()->user()->id)->exists();
+        $seasonId = $request->season_id;
+        $styleId = $request->style_id;
+        $priceFrom = $request->price_from;
+        $priceTo = $request->price_to;
 
       if($request->sizes){
           if($type == 0){
@@ -179,6 +183,15 @@ class ProductController extends Controller
 
          if($sort_price){
              $data->orderBy('products.price',$sort_price);
+         }
+         if($styleId){
+             $data->where('products.style_id',$styleId);
+         }
+         if($seasonId){
+             $data->where('products.season_id',$seasonId);
+         }
+         if($priceFrom and $priceTo){
+             $data->whereBetween('products.price',[$priceFrom,$priceTo]);
          }
 
 
