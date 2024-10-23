@@ -40,7 +40,8 @@ class AuthController extends Controller
                 'iin_bin'=>$request->iin_bin,
                 'user_id'=>$company->id,
                 'city_id'=>$request->city_id,
-                'document'=>$request->document ?? null
+                'document'=>$request->document ?? null,
+                'mall_id'=>$request->mall_id ?? null,
             ]);
 
 

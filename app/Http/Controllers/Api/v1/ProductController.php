@@ -31,6 +31,7 @@ class ProductController extends Controller
         $styleId = $request->style_id;
         $priceFrom = $request->price_from;
         $priceTo = $request->price_to;
+        $discount = $request->discount;
 
       if($request->sizes){
           if($type == 0){
@@ -55,6 +56,10 @@ class ProductController extends Controller
                   ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
                   ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
 
+              if($discount){
+                  $data->whereNotNull('products.discount_price');
+              }
+
           }
           else{
               $data = Product::query()
@@ -76,6 +81,10 @@ class ProductController extends Controller
                   ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
                   ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
               ;
+              if($discount){
+                  $data->whereNotNull('products.discount_price');
+              }
+
           }
       }else{
           if($existsFavoriteSize){
@@ -104,6 +113,9 @@ class ProductController extends Controller
                       ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                       ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
                       ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+                  if($discount){
+                      $data->whereNotNull('products.discount_price');
+                  }
 
               }
               else{
@@ -127,6 +139,10 @@ class ProductController extends Controller
                       ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
                       ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                   ;
+                  if($discount){
+                      $data->whereNotNull('products.discount_price');
+                  }
+
               }
           }else{
               if($type == 0){
@@ -147,6 +163,10 @@ class ProductController extends Controller
                       ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                       ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
                       ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+                  if($discount){
+                      $data->whereNotNull('products.discount_price');
+                  }
+
 
               }
               else{
@@ -169,6 +189,10 @@ class ProductController extends Controller
                       ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
                       ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                   ;
+                  if($discount){
+                      $data->whereNotNull('products.discount_price');
+                  }
+
               }
           }
         }

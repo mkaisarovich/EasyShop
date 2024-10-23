@@ -84,4 +84,11 @@ class ProfileController extends Controller
     }
 
 
+    function edit(Request $request){
+
+
+        return result(ShopService::shop(),200,'Profile Details');
+    }
+
+
 }

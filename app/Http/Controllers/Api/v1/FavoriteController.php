@@ -138,6 +138,7 @@ class FavoriteController extends Controller
                 'time'=>$request->get('time'),
                 'type'=>$request->get('type'),
                 'selled_id'=>$request->get('selled_id'),
+                'product_size'=>$request->get('product_size'),
             ]);
 
             return result(true,200,"Success");

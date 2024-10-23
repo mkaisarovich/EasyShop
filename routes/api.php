@@ -58,6 +58,7 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
     Route::prefix('baskets')->group(function () {
         Route::get('', [BasketController::class, 'index']);
+        Route::delete('delete', [BasketController::class, 'delete']);
     });
 
     Route::prefix('catalog')->group(function () {
@@ -71,6 +72,7 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
     Route::prefix('profile')->group(function () {
         Route::get('', [ProfileController::class, 'index']);
+        Route::post('edit', [ProfileController::class, 'edit']);
         Route::get('/subscriptions', [ProfileController::class, 'subscriptions']);
         Route::get('/about_us', [ProfileController::class, 'about_us']);
         Route::get('/privacy', [ProfileController::class, 'privacy']);

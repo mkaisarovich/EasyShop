@@ -18,7 +18,7 @@ class BasketController extends Controller
 
         $type = $request->input('type');
         if($type == 'fashion'){
-            $data = Fashion::query()->select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),'baskets.type as basket_type')
+            $data = Fashion::query()->select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),'baskets.type as basket_type','baskets.id as basket_id')
                 ->with('products')
                 ->withCount('products as count_products')
                 ->leftJoin('baskets','baskets.fashion_id','=','fashions.id')
@@ -34,7 +34,7 @@ class BasketController extends Controller
         }else{
             $data = Product::query()->select('products.*',  DB::raw('(favorites.id IS NOT NULL) as is_favorite'), 'baskets.type as basket_type','baskets.product_size',
                 'product_styles.name as style_name','product_structures.name as structure_name',
-                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
+                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name','baskets.id as basket_id')
                 ->with('images','sizes')
                 ->leftJoin('favorites', function ($join) {
                     $join->on('favorites.favorite_id', '=', 'products.id')
@@ -91,5 +91,12 @@ class BasketController extends Controller
 
         return result($data,200,'Корзина');
 
+    }
+
+
+    function delete(Request $request){
+        $basketId = $request->input('basketId');
+        Basket::query()->where('id',$basketId)->delete();
+        return result(true,200,'Basket deleted successfully');
     }
 }
