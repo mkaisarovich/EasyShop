@@ -29,7 +29,9 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             FashionSeeder::class,
             FashionProductSeeder::class,
-            MallSeeder::class
+            MallSeeder::class,
+            StatusSeeder::class,
+            SubCatalogSeeder::class
         ]);
     }
 }

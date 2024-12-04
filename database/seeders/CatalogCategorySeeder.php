@@ -17,42 +17,47 @@ class CatalogCategorySeeder extends Seeder
             [
                 'name'=>'Одежда',
                 'gender_id'=>1,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'Обувь',
                 'gender_id'=>1,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'Аксессуары',
                 'gender_id'=>1,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'Одежда',
                 'gender_id'=>2,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'Обувь',
                 'gender_id'=>2,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'Аксессуары',
                 'gender_id'=>2,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'МАЛЬЧИКАМ',
                 'gender_id'=>3,
-                'shop_id'=>1,
+//                'shop_id'=>1,
             ],
             [
                 'name'=>'ДЕВУШКАМ',
                 'gender_id'=>3,
-                'shop_id'=>1,
+//                'shop_id'=>1,
+            ],
+            [
+                'name'=>'МАЛЫШАМ',
+                'gender_id'=>3,
+//                'shop_id'=>1,
             ],
         ];
 

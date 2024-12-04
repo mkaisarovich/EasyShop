@@ -15,6 +15,7 @@ use App\Models\ProductStyle;
 use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -50,6 +51,7 @@ class ProductController extends Controller
                           ->where('favorites.user_id', '=', auth()->user()->id);
                   })
                   ->whereIn('products.size_id',$request->sizes)
+//                  ->where('products.count','>',0)
                   ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                   ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                   ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
@@ -70,6 +72,7 @@ class ProductController extends Controller
                   ->where('products.shop_id',$shopId)
                   ->where('products.catalog_category_id',$catalog)
                   ->where('products.product_category_id',$type)
+//                  ->where('products.count','>',0)
                   ->leftJoin('favorites', function ($join) {
                       $join->on('favorites.favorite_id', '=', 'products.id')
                           ->where('favorites.type', '=', 'product')
@@ -86,7 +89,8 @@ class ProductController extends Controller
               }
 
           }
-      }else{
+      }
+      else{
           if($existsFavoriteSize){
 
               $sizes = FavoriteSize::query()
@@ -102,12 +106,14 @@ class ProductController extends Controller
                       ->with('images','sizes')
                       ->where('products.shop_id',$shopId)
                       ->where('products.catalog_category_id',$catalog)
+//                      ->where('products.count','>',0)
+                      ->whereIn('product_sizes.size_id',$sizes)
                       ->leftJoin('favorites', function ($join) {
                           $join->on('favorites.favorite_id', '=', 'products.id')
                               ->where('favorites.type', '=', 'product')
                               ->where('favorites.user_id', '=', auth()->user()->id);
                       })
-
+                      ->leftJoin('product_sizes','product_sizes.product_id','=','products.id')
                       ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                       ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                       ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
@@ -127,12 +133,14 @@ class ProductController extends Controller
                       ->where('products.shop_id',$shopId)
                       ->where('products.catalog_category_id',$catalog)
                       ->where('products.product_category_id',$type)
+//                      ->where('products.count','>',0)
                       ->leftJoin('favorites', function ($join) {
                           $join->on('favorites.favorite_id', '=', 'products.id')
                               ->where('favorites.type', '=', 'product')
                               ->where('favorites.user_id', '=', auth()->user()->id);
                       })
-                      ->whereIn('products.size_id',$sizes)
+                      ->whereIn('product_sizes.size_id',$sizes)
+                      ->leftJoin('product_sizes','product_sizes.product_id','=','products.id')
                       ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                       ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                       ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
@@ -144,7 +152,8 @@ class ProductController extends Controller
                   }
 
               }
-          }else{
+          }
+          else{
               if($type == 0){
                   $data = Product::query()
                       ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
@@ -153,6 +162,7 @@ class ProductController extends Controller
                       ->with('images','sizes')
                       ->where('products.shop_id',$shopId)
                       ->where('products.catalog_category_id',$catalog)
+//                      ->where('products.count','>',0)
                       ->leftJoin('favorites', function ($join) {
                           $join->on('favorites.favorite_id', '=', 'products.id')
                               ->where('favorites.type', '=', 'product')
@@ -177,6 +187,7 @@ class ProductController extends Controller
                       ->with('images','sizes')
                       ->where('products.shop_id',$shopId)
                       ->where('products.catalog_category_id',$catalog)
+//                      ->where('products.count','>',0)
                       ->where('products.product_category_id',$type)
                       ->leftJoin('favorites', function ($join) {
                           $join->on('favorites.favorite_id', '=', 'products.id')
@@ -217,6 +228,9 @@ class ProductController extends Controller
          if($priceFrom and $priceTo){
              $data->whereBetween('products.price',[$priceFrom,$priceTo]);
          }
+        if($request->color_id){
+            $data->where('products.color_id',$request->color_id);
+        }
 
 
 
@@ -261,9 +275,9 @@ class ProductController extends Controller
 
     }
 
-    function getCategory()
+    function getCategory(Request $request)
     {
-        $data = ProductCategory::all();
+        $data = ProductCategory::query()->where('catalog_category_id',$request->catalog_category_id)->get();
 
         return result($data,200,'Category list');
 
@@ -360,5 +374,7 @@ class ProductController extends Controller
 
         return result(true,200,'Успешно добавился в корзину');
     }
+
+  
 
 }

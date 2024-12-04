@@ -17,7 +17,10 @@ return new class extends Migration
             $table->time('time');
             $table->enum('type',['product','fashion']);
             $table->unsignedBigInteger('selled_id')->nullable();
+            $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('status_id')->default(1);
+            $table->string('product_size')->nullable();
             $table->timestamps();
         });
     }

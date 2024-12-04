@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('style_id')->constrained('product_styles')->cascadeOnDelete();
             $table->foreignId('struture_id')->constrained('product_structures')->cascadeOnDelete();
             $table->foreignId('season_id')->constrained('product_seasons')->cascadeOnDelete();
+            $table->foreignId('color_id')->constrained('colors')->cascadeOnDelete();
             $table->boolean('discount')->default(0);
             $table->foreignId('catalog_category_id')->constrained('catalog_categories')->cascadeOnDelete();
             $table->foreignId('product_category_id')->constrained('product_categories')->cascadeOnDelete();
@@ -26,6 +27,9 @@ return new class extends Migration
             $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
             $table->enum('type',['hat','t_shirt','hoody','trousers','bag','shoes','accessory'])->nullable();
             $table->boolean('status')->default(1);
+            $table->unsignedBigInteger('subcatalog_id');
+            $table->string('articul')->nullable();
+//            $table->integer('count');
             $table->timestamps();
         });
     }

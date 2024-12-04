@@ -16,4 +16,9 @@ class Fashion extends Model
         return $this->belongsToMany(Product::class, 'fashion_products', 'fashion_id', 'product_id');
     }
 
+    public function images()
+    {
+        return $this->hasMany(FashionImage::class, 'fashion_id');
+    }
+
 }

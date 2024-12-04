@@ -26,6 +26,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/documents', [AuthController::class, 'documents']);
+Route::get('/clothes_types', [AuthController::class, 'types']);
+Route::get('/category', [AuthController::class, 'category']);
+Route::get('/subcatalog', [AuthController::class, 'subcatalog']);
+
 
 Route::prefix('auth')->group(function (){
     Route::post('register', [AuthController::class, 'register']);
@@ -54,6 +59,8 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
         Route::get('/products', [FashionController::class, 'products']);
         Route::get('/product_category', [FashionController::class, 'product_category']);
         Route::post('/create', [FashionController::class, 'create']);
+        Route::post('/create_order', [FashionController::class, 'createFashion']);
+        Route::post('/generate', [FashionController::class, 'generate']);
     });
 
     Route::prefix('baskets')->group(function () {
@@ -77,6 +84,7 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
         Route::get('/about_us', [ProfileController::class, 'about_us']);
         Route::get('/privacy', [ProfileController::class, 'privacy']);
         Route::post('/favorite_sizes', [ProfileController::class, 'favoriteSize']);
+        Route::post('/orders', [ProfileController::class, 'orders']);
     });
 
     Route::prefix('favorites')->group(function () {
@@ -111,6 +119,18 @@ Route::middleware(['auth:sanctum'])->prefix("admin")->group(function () {
         Route::get('/switch', [\App\Http\Controllers\Api\v1\AdminController::class, 'switchProduct']);
         Route::post('/create', [\App\Http\Controllers\Api\v1\AdminController::class, 'createProduct']);
         Route::post('/edit', [\App\Http\Controllers\Api\v1\AdminController::class, 'editProduct']);
+//        Route::post('/edit', [ProfileController::class, 'editAdmin']);
+    });
+
+    Route::prefix('fashions')->group(function () {
+        Route::post('/create', [\App\Http\Controllers\Api\v1\AdminController::class, 'createFashion']);
+//        Route::post('/edit', [ProfileController::class, 'editAdmin']);
+    });
+
+    Route::prefix('orders')->group(function () {
+        Route::get('', [\App\Http\Controllers\Api\v1\AdminController::class, 'indexOrders']);
+        Route::post('/delete', [\App\Http\Controllers\Api\v1\AdminController::class, 'deleteOrder']);
+        Route::post('/change_status/{order}', [\App\Http\Controllers\Api\v1\AdminController::class, 'changeStatus']);
 //        Route::post('/edit', [ProfileController::class, 'editAdmin']);
     });
 

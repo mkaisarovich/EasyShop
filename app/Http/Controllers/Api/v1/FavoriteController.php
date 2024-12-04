@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Basket;
 use App\Models\Fashion;
 use App\Models\Favorite;
 use App\Models\Order;
@@ -36,10 +37,11 @@ class FavoriteController extends Controller
 
         $fashions = Fashion::query()->select('fashions.*',
             DB::raw('(favorites.id IS NOT NULL) as is_favorite'), 'baskets.type as basket_type')
-            ->with('products')
+            ->with('products','images')
             ->withCount('products as count_products')
             ->leftJoin('baskets', 'baskets.fashion_id', '=', 'fashions.id')
             ->where('baskets.user_id', auth()->user()->id)
+            ->where('fashions.is_active', 1)
             ->where('baskets.type', 'fashion')
             ->leftJoin('favorites', function ($join) {
                 $join->on('favorites.favorite_id', '=', 'fashions.id')
@@ -132,14 +134,22 @@ class FavoriteController extends Controller
 
         function order(Request $request)
         {
-            Order::query()->create([
+            $order = Order::query()->create([
                 'date' => $request->get('date'),
                 'user_id' => auth()->user()->id,
                 'time'=>$request->get('time'),
                 'type'=>$request->get('type'),
                 'selled_id'=>$request->get('selled_id'),
                 'product_size'=>$request->get('product_size'),
+                'shop_id'=>$request->shop_id
             ]);
+
+            if($order){
+                if($request->basket_id){
+                    Basket::query()->where('id',$request->basket_id)->delete();
+                }
+
+            }
 
             return result(true,200,"Success");
         }

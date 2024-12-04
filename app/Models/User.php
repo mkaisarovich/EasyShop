@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'city_id'
+        'city_id',
+        'image'
     ];
 
     /**
@@ -44,4 +45,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id');
+    }
+
 }

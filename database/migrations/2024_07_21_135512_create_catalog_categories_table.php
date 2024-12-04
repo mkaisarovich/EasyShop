@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('image')->nullable();
             $table->foreignId('gender_id')->constrained('genders')->cascadeOnDelete();
-            $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
+//            $table->foreignId('shop_id')->constrained('shops')->cascadeOnDelete();
         });
     }
 

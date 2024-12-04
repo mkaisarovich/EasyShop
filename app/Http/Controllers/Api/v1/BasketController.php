@@ -18,8 +18,9 @@ class BasketController extends Controller
 
         $type = $request->input('type');
         if($type == 'fashion'){
-            $data = Fashion::query()->select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),'baskets.type as basket_type','baskets.id as basket_id')
-                ->with('products')
+            $data = Fashion::query()->
+            select('fashions.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),'baskets.type as basket_type','baskets.id as basket_id')
+                ->with('products','images')
                 ->withCount('products as count_products')
                 ->leftJoin('baskets','baskets.fashion_id','=','fashions.id')
                 ->where('baskets.user_id',auth()->user()->id)
