@@ -187,6 +187,7 @@ class ProductController extends Controller
                       ->with('images','sizes')
                       ->where('products.shop_id',$shopId)
                       ->where('products.catalog_category_id',$catalog)
+
 //                      ->where('products.count','>',0)
                       ->where('products.product_category_id',$type)
                       ->leftJoin('favorites', function ($join) {
@@ -218,6 +219,9 @@ class ProductController extends Controller
 
          if($sort_price){
              $data->orderBy('products.price',$sort_price);
+         }
+         if($request->subcatalog_id){
+             $data->where('products.subcatalog_id',$request->subcatalog_id);
          }
          if($styleId){
              $data->where('products.style_id',$styleId);

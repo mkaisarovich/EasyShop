@@ -42,6 +42,7 @@ class FavoriteController extends Controller
             ->leftJoin('baskets', 'baskets.fashion_id', '=', 'fashions.id')
             ->where('baskets.user_id', auth()->user()->id)
             ->where('fashions.is_active', 1)
+            ->where('fashions.is_basket', 1)
             ->where('baskets.type', 'fashion')
             ->leftJoin('favorites', function ($join) {
                 $join->on('favorites.favorite_id', '=', 'fashions.id')
@@ -134,22 +135,31 @@ class FavoriteController extends Controller
 
         function order(Request $request)
         {
-            $order = Order::query()->create([
-                'date' => $request->get('date'),
-                'user_id' => auth()->user()->id,
-                'time'=>$request->get('time'),
-                'type'=>$request->get('type'),
-                'selled_id'=>$request->get('selled_id'),
-                'product_size'=>$request->get('product_size'),
-                'shop_id'=>$request->shop_id
-            ]);
+            $selledIds = $request->get('selled_id');
+            $index = 0;
+            foreach ($selledIds as $selledId) {
+                $order = Order::query()->create([
+                    'date' => $request->get('date'),
+                    'user_id' => auth()->user()->id,
+                    'time'=>$request->get('time'),
+                    'type'=>$request->get('type'),
+                    'selled_id'=>$selledId,
+                    'product_size'=>$request->product_size[$index],
+                    'shop_id'=>$request->shop_id[$index]
+                ]);
 
-            if($order){
-                if($request->basket_id){
-                    Basket::query()->where('id',$request->basket_id)->delete();
+                if($order){
+                    if($request->basket_id){
+                        foreach ($request->basket_id as $basket){
+                            Basket::query()->where('id',$basket)->delete();
+                        }
+                    }
+
                 }
-
             }
+
+
+
 
             return result(true,200,"Success");
         }

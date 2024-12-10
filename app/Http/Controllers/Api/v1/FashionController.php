@@ -39,6 +39,7 @@ class FashionController extends Controller
             ->with('images')
             ->where('fashions.shop_id', $shop->id)
             ->where('fashions.is_active', 1)
+            ->where('fashions.is_basket', 1)
             ->withCount('products as count_products')
             ->leftJoin('favorites', function ($join) {
                 $join->on('favorites.favorite_id', '=', 'fashions.id')
@@ -364,15 +365,19 @@ class FashionController extends Controller
 
 
     function createFashion(Request $request){
-        $basketId = $request->basket_id;
+        $basketIds = $request->basket_id;
 
-        if($basketId){
-            $fashionId = Basket::query()->select('fashion_id')->where('id',$basketId)->value('fashion_id');
-            $fashion = Fashion::query()->findOrFail($fashionId);
-            $fashion->is_active = 1;
-            $fashion->save();
+        if($basketIds){
+            foreach ($basketIds as $basketId){
+                $fashionId = Basket::query()->select('fashion_id')->where('id',$basketId)->value('fashion_id');
+                $fashion = Fashion::query()->findOrFail($fashionId);
+                $fashion->is_active = 1;
+                $fashion->is_basket = 1;
+                $fashion->save();
 
-            Basket::query()->where('id',$basketId)->delete();
+                Basket::query()->where('id',$basketId)->delete();
+            }
+
 
             return result(true,200,'Created order fashion');
         }

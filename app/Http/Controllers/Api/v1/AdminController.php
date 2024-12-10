@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Fashion;
 use App\Models\FashionImage;
 use App\Models\FashionProduct;
+use App\Models\SubCatalog;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -17,15 +18,20 @@ use Illuminate\Support\Facades\Storage;
 class AdminController extends Controller
 {
     function indexProducts(Request $request){
-        $products = Product::query()->with('images','sizes','season','structure','style','catalog_category','product_category')
-            ->where(['shop_id'=>ShopService::shop()->id,'status'=>$request->status])->get();
+        $products = Product::query()->with('images','sizes.productSizes','season','structure','style','catalog_category','product_category','subcatalog','color')
+            ->where(['shop_id'=>ShopService::shop()->id,'status'=>$request->status]);
         $fashions = Fashion::query()->with('products','images','products.season','products.structure','products.style','products.catalog_category','products.product_category')
-            ->where(['status'=>$request->status])
-            ->withCount('products as count_products')->where(['shop_id'=>ShopService::shop()->id])->get();
+            ->where(['status'=>$request->status,'is_basket'=>1])
+            ->withCount('products as count_products')->where(['shop_id'=>ShopService::shop()->id]);
+
+        if($request->has('search')){
+            $products->where('articul', 'like', '%' . $request->search . '%');
+            $fashions->where('name', 'like', '%' . $request->search . '%');
+        }
 
         $data = [
-            'products' => $products,
-            'fashions' => $fashions,
+            'products' => $products->get(),
+            'fashions' => $fashions->get(),
         ];
 
         return result($data,200,'Products List');
@@ -82,7 +88,8 @@ class AdminController extends Controller
                 'discount_price'=>$request->discount != null? (int)$request->price - (((int)$request->price * (int)$request->discount) / 100 ) : null,
                 'type'=>$request->product_type,
                 'subcatalog_id'=>$request->subcatalog_id,
-                'articul'=>$request->articul
+                'articul'=>$request->articul,
+                'discount'=>$request->discount_price != null ? 1 : 0
 //                'count'=>10
             ];
 
@@ -173,6 +180,8 @@ class AdminController extends Controller
 
         }
 
+
+        return result(true,200,'Successfully edited');
     }
 
 

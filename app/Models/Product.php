@@ -26,6 +26,16 @@ class Product extends Model
         return $this->belongsTo(ProductStructure::class, 'struture_id');
     }
 
+    public function subcatalog()
+    {
+        return $this->belongsTo(SubCatalog::class, 'subcatalog_id');
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class, 'color_id');
+    }
+
     public function style()
     {
         return $this->belongsTo(ProductStyle::class, 'style_id');

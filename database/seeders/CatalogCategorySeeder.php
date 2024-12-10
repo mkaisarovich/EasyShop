@@ -63,4 +63,16 @@ class CatalogCategorySeeder extends Seeder
 
         CatalogCategory::insert($inits);
     }
+
+
+    public function getAvatarPath($filename)
+    {
+        // Assuming the image is stored in `storage/app/public/shops/`
+//        if (Storage::disk('public')->exists("shops/{$filename}")) {
+        return config('app.url') . "/storage/category/category/{$filename}";
+//        }
+
+        // Fallback in case the image is missing
+//        return null; // or return a default placeholder image path
+    }
 }

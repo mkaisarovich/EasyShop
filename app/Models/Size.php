@@ -12,4 +12,9 @@ class Size extends Model
     public $timestamps = false;
 
     protected $guarded = [];
+
+    public function productSizes()
+    {
+        return $this->hasMany(ProductSize::class, 'size_id');
+    }
 }
