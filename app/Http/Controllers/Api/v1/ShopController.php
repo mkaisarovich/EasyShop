@@ -13,29 +13,60 @@ class ShopController extends Controller
 {
 
     function index(Request $request){
-        $data = Shop::query();
 
-        if($request->has('search')){
-            $data->where('name', 'like', '%' . $request->search . '%');
-        }
-        if($request->has('city_id')){
-            $data->where('city_id',$request->city_id);
-        }
-        if($request->has('mall_id')){
-            $data->where('mall_id',$request->mall_id);
-        }
+//dd(123);
 
-        $data = $data->get();
-        $userId = auth()->user()->id;
+        if(auth()->check()){
+            $data = Shop::query()->with('owner');
+
+            if($request->has('search')){
+                $data->where('name', 'like', '%' . $request->search . '%');
+            }
+            if($request->has('city_id')){
+                $data->where('city_id',$request->city_id);
+            }
+            if($request->mall_id != 0){
+//            return 123;
+                $data->where('mall_id',$request->mall_id);
+            }
+            if($request->mall_id == 0){
+//            return 123;
+                $data->where('mall_id',null);
+            }
+
+            $data = $data->get();
+            $userId = auth()->user()->id;
 
 // Loop through each shop and check subscription status
-        foreach ($data as $shop) {
-            $subscribe = Subscribe::query()
-                ->where('user_id', $userId)
-                ->where('shop_id', $shop->id)
-                ->exists();
-            $shop->subscribe = $subscribe ? 1 : 0;
+            foreach ($data as $shop) {
+                $subscribe = Subscribe::query()
+                    ->where('user_id', $userId)
+                    ->where('shop_id', $shop->id)
+                    ->exists();
+                $shop->subscribe = $subscribe ? 1 : 0;
+            }
+        }else{
+            $data = Shop::query()->with('owner');
+
+            if($request->has('search')){
+                $data->where('name', 'like', '%' . $request->search . '%');
+            }
+            if($request->has('city_id')){
+                $data->where('city_id',$request->city_id);
+            }
+            if($request->mall_id != 0){
+                $data->where('mall_id',$request->mall_id);
+            }
+            if($request->mall_id == 0){
+                $data->where('mall_id',null);
+            }
+
+            $data = $data->get();
         }
+
+
+
+
 
 //        return $data->get();
 

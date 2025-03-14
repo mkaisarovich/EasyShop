@@ -31,9 +31,14 @@ class Product extends Model
         return $this->belongsTo(SubCatalog::class, 'subcatalog_id');
     }
 
+//    public function color()
+//    {
+//        return $this->belongsTo(Color::class, 'color_id');
+//    }
+
     public function color()
     {
-        return $this->belongsTo(Color::class, 'color_id');
+        return $this->belongsToMany(Color::class, 'product_colors');
     }
 
     public function style()
@@ -58,7 +63,7 @@ class Product extends Model
 
     public function sizes()
     {
-        return $this->belongsToMany(Size::class, 'product_sizes');
+        return $this->belongsToMany(Size::class, 'product_sizes')->withPivot('product_id', 'size_id', 'count');
     }
 
     public function fashions()

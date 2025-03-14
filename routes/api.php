@@ -30,32 +30,33 @@ Route::get('/documents', [AuthController::class, 'documents']);
 Route::get('/clothes_types', [AuthController::class, 'types']);
 Route::get('/category', [AuthController::class, 'category']);
 Route::get('/subcatalog', [AuthController::class, 'subcatalog']);
+Route::get('/version', [AuthController::class, 'version']);
 
 
 Route::prefix('auth')->group(function (){
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('req_log', [AuthController::class, 'RegOrLog']);
     Route::post('check_code', [AuthController::class, 'checkCode']);
     Route::post('forgot_password', [AuthController::class, 'forgotPassword']);
     Route::post('restore_password', [AuthController::class, 'restorePassword']);
     Route::get('get_city', [AuthController::class, 'getCity']);
 });
 
+Route::get('/malls', [ShopController::class, 'malls']);
 
 Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
-    Route::get('/malls', [ShopController::class, 'malls']);
-
     Route::prefix('shops')->group(function () {
-        Route::get('', [ShopController::class, 'index']);
+        Route::get('', [ShopController::class, 'index'])->withoutMiddleware('auth:sanctum');
         Route::get('/{shop}', [ShopController::class, 'show']);
-        Route::get('/{shop}/catalog', [CatalogController::class, 'index']);
+        Route::get('/{shop}/catalog', [CatalogController::class, 'index'])->withoutMiddleware('auth:sanctum');
         Route::post('/subscribe/{shop}', [ShopController::class, 'subscribe']);
     });
 
 
     Route::prefix('fashions')->group(function () {
-        Route::get('', [FashionController::class, 'index']);
+        Route::get('', [FashionController::class, 'index'])->withoutMiddleware('auth:sanctum');
         Route::get('/products', [FashionController::class, 'products']);
         Route::get('/product_category', [FashionController::class, 'product_category']);
         Route::post('/create', [FashionController::class, 'create']);
@@ -69,10 +70,10 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
     });
 
     Route::prefix('catalog')->group(function () {
-        Route::get('/filter', [ProductController::class, 'filter']);
-        Route::get('/category', [ProductController::class, 'getCategory']);
-        Route::get('/{catalog}/products', [ProductController::class, 'index']);
-        Route::get('/{catalog}/products/{product}', [ProductController::class, 'show']);
+        Route::get('/filter', [ProductController::class, 'filter'])->withoutMiddleware('auth:sanctum');
+        Route::get('/category', [ProductController::class, 'getCategory'])->withoutMiddleware('auth:sanctum');
+        Route::get('/{catalog}/products', [ProductController::class, 'index'])->withoutMiddleware('auth:sanctum');
+        Route::get('/{catalog}/products/{product}', [ProductController::class, 'show'])->withoutMiddleware('auth:sanctum');
         Route::post('/{catalog}/products/{product}', [ProductController::class, 'basket']);
     });
 
@@ -85,6 +86,7 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
         Route::get('/privacy', [ProfileController::class, 'privacy']);
         Route::post('/favorite_sizes', [ProfileController::class, 'favoriteSize']);
         Route::post('/orders', [ProfileController::class, 'orders']);
+        Route::delete('/delete', [ProfileController::class, 'delete']);
     });
 
     Route::prefix('favorites')->group(function () {

@@ -20,6 +20,8 @@ class UserSeeder extends Seeder
                 'password'=>bcrypt('margo'),
                 'role'=>'user',
                 'city_id'=>1,
+                'phone'=>'7772437884',
+                'instagram'=>'ad4mson'
             ],
             [
                 'name'=>'Марлен',
@@ -27,27 +29,35 @@ class UserSeeder extends Seeder
                 'password'=>bcrypt('margo'),
                 'role'=>'user',
                 'city_id'=>3,
+                'phone'=>'7772437884',
+                'instagram'=>'ad4mson'
             ],
             [
                 'name'=>'Название компаний 1',
                 'email'=>'company1@gmail.com',
                 'password'=>bcrypt('company'),
                 'role'=>'partner',
-                'city_id'=>1
+                'city_id'=>1,
+                 'phone'=>'7772437884',
+                'instagram'=>'ad4mson'
             ],
             [
                 'name'=>'Название компаний 2',
                 'email'=>'company2@gmail.com',
                 'password'=>bcrypt('company'),
                 'role'=>'partner',
-                'city_id'=>2
+                'city_id'=>2,
+                'phone'=>'7772437884',
+                'instagram'=>'ad4mson'
             ],
             [
                 'name'=>'Alikhan Baigaziev',
                 'email'=>'admin@gmail.com',
                 'password'=>bcrypt('admin'),
                 'role'=>'admin',
-                'city_id'=>2
+                'city_id'=>2,
+                'phone'=>'7772437884',
+                'instagram'=>'ad4mson'
             ],
 
         ];

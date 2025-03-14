@@ -21,4 +21,13 @@ class Fashion extends Model
         return $this->hasMany(FashionImage::class, 'fashion_id');
     }
 
+    public function season()
+    {
+        return $this->belongsTo(ProductSeason::class, 'season_id');
+    }
+
+    public function style()
+    {
+        return $this->belongsTo(ProductStyle::class, 'style_id');
+    }
 }

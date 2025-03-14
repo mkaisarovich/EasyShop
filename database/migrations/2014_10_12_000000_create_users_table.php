@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('password');
             $table->enum('role', ['partner', 'user','admin'])->default('user');
             $table->rememberToken();
+            $table->string('instagram')->nullable();
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }

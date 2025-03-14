@@ -20,4 +20,13 @@ class Order extends Model
     {
         return $this->belongsTo(Fashion::class, 'selled_id');
     }
+    
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function shop(){
+        return $this->belongsTo(Shop::class, 'shop_id');
+    }
+
 }

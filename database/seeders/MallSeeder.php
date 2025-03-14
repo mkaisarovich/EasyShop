@@ -20,6 +20,12 @@ class MallSeeder extends Seeder
                 'address'=>"ТЦ Mega Almaty, Ул Розыбакиева 247 а",
                 'city_id'=>1,
                 'avatar'=>$this->getAvatarPath('5898934_1920.jpg')
+            ],
+            [
+                'name'=>'Dostyk Plaza Almaty',
+                'address'=>"ТЦ Dostyk Plaza Almaty, микрорайон Самал-2 111",
+                'city_id'=>1,
+                'avatar'=>$this->getAvatarPath('section-about-img-1.png')
             ]
         ];
 

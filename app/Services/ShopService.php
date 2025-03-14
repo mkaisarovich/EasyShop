@@ -17,7 +17,7 @@ class ShopService
     public static function shop()
     {
         $user_id = auth()->user()->id;
-           return Shop::query()->where('user_id', $user_id)->first();
+           return Shop::query()->with('city','owner')->where('user_id', $user_id)->first();
 
 
 //        return self::$shop_id;

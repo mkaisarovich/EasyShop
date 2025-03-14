@@ -23,7 +23,12 @@ class User extends Authenticatable
         'password',
         'role',
         'city_id',
-        'image'
+        'image',
+        'device_token',
+        'device_type',
+        'instagram',
+        'phone',
+        'address',
     ];
 
     /**

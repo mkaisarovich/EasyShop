@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('style_id')->constrained('product_styles')->cascadeOnDelete();
             $table->foreignId('struture_id')->constrained('product_structures')->cascadeOnDelete();
             $table->foreignId('season_id')->constrained('product_seasons')->cascadeOnDelete();
-            $table->foreignId('color_id')->constrained('colors')->cascadeOnDelete();
+//            $table->foreignId('color_id')->constrained('colors')->cascadeOnDelete();
             $table->boolean('discount')->default(0);
             $table->foreignId('catalog_category_id')->constrained('catalog_categories')->cascadeOnDelete();
             $table->foreignId('product_category_id')->constrained('product_categories')->cascadeOnDelete();

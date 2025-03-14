@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('moderate')->default(false);
             $table->string('whatsapp')->nullable();
             $table->string('phone_call')->nullable();
+            $table->unsignedBigInteger('numeration');
             $table->timestamps();
         });
     }

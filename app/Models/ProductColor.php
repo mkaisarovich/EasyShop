@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Color extends Model
+class ProductColor extends Model
 {
     use HasFactory;
 
@@ -13,10 +13,10 @@ class Color extends Model
 
     protected $guarded = [];
 
-    public function productColors()
+    public function color()
     {
-        return $this->hasMany(ProductColor::class, 'color_id');
+        return $this->belongsTo(Color::class, 'color_id');
     }
 
-    
+
 }

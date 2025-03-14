@@ -15,20 +15,22 @@ class AuthController extends Controller
 {
 
     function register(Request $request){
-
+        $exists = User::query()->where('email',$request->email)->exists();
+        if($exists){
+            return result(false,400,'Email already exists');
+        }
         if($request->role == 'user'){
 
             if($request->service == 'google' or $request->service == 'apple'){
-                $exists = User::query()->where('email',$request->email)->exists();
-                if($exists){
-                    return result(false,400,'Email already exists');
-                }
+
 
                 $dataArray = [
-                    'name'=>$request->email,
+                    'name'=>$request->name,
                     'email'=>$request->email,
                     'password'=>bcrypt(12345),
-                    'role'=>$request->role
+                    'role'=>$request->role,
+                    'device_token'=>$request->device_token ?? null,
+//                    'device_type'=>$request->device_type,
                 ];
 
                 User::query()->create($dataArray);
@@ -56,7 +58,9 @@ class AuthController extends Controller
                     'name'=>$request->name,
                     'email'=>$request->email,
                     'password'=>bcrypt($request->password),
-                    'role'=>$request->role
+                    'role'=>$request->role,
+                        'device_token'=>$request->device_token ?? null,
+//                    'device_type'=>$request->device_type,
                 ];
             }
 
@@ -74,10 +78,22 @@ class AuthController extends Controller
                 'email'=>$request->email,
                 'password'=>bcrypt($request->password),
                 'city_id'=>$request->city_id,
-                'role'=>'partner'
+                'role'=>'partner',
+                'device_token'=>$request->device_token ?? null,
+//                'device_type'=>$request->device_type,
             ];
 
             $company = User::query()->create($dataArray);
+
+            $numerationExists = Shop::query()->where('mall_id',$request->mall_id)->exists();
+            if($numerationExists){
+                $numeration = Shop::query()
+                    ->where('mall_id', $request->mall_id)
+                    ->max('numeration');
+                $numeration = $numeration + 1;
+            }else{
+                $numeration = 1;
+            }
 
             Shop::query()->create([
                 'name'=>$request->name,
@@ -86,6 +102,8 @@ class AuthController extends Controller
                 'city_id'=>$request->city_id,
                 'document'=>$request->document ?? null,
                 'mall_id'=>$request->mall_id ?? null,
+                'numeration'=>$numeration,
+                'address'=>$request->address ?? null,
             ]);
 
 
@@ -112,28 +130,9 @@ class AuthController extends Controller
     {
         $data = [];
 
-//        if($request->service == 'google' or $request->service = 'apple'){
-//            if (Auth::attempt(['email' => $request->email, ])) {
-//
-//                $token = request()->user()->createToken('auth')->plainTextToken;
-//                $token = explode('|', $token)[1];
-//                $data = [
-//                    'access_token' => $token,
-//                    'token_type' => 'Bearer',
-//                    'ttl' => 315569520,
-//
-//                ];
-//            }
-//
-//            return $data != []
-//                ? result( array_merge($request->user()->toArray(), ['token' => $data]),200,'Успешно')
-//                : result(null,422,"Логин или пароль неправильный");
-//        }
-
-
 
 if ($request->service == 'google' || $request->service == 'apple') {
-    $user = \App\Models\User::where('email', $request->email)->first();
+    $user = \App\Models\User::where('email', $request->email)->firstOrFail();
 
     if ($user) {
         $token = $user->createToken('auth')->plainTextToken;
@@ -144,6 +143,14 @@ if ($request->service == 'google' || $request->service == 'apple') {
             'token_type' => 'Bearer',
             'ttl' => 315569520,
         ];
+
+        if($request->device_token){
+            $user = $request->user('web');
+//            return $user;
+//            $user->device_type = $request->device_type ?? null;
+            $user->device_token = $request->device_token ?? null;
+            $user->save();
+        }
 
         return result(array_merge($user->toArray(), ['token' => $data]), 200, 'Успешно');
     }
@@ -161,7 +168,16 @@ if ($request->service == 'google' || $request->service == 'apple') {
                     'ttl' => 315569520,
 
                 ];
+                if($request->device_token){
+                    $user = $request->user('web');
+//                $user->device_type = $request->device_type ?? null;
+                    $user->device_token = $request->device_token ?? null;
+                    $user->save();
+                }
+
             }
+
+
 
             return $data != []
                 ? result( array_merge($request->user()->toArray(), ['token' => $data]),200,'Успешно')
@@ -173,6 +189,74 @@ if ($request->service == 'google' || $request->service == 'apple') {
 
 
     }
+
+
+    function RegOrLog(Request $request){
+        $exists = User::query()->where('email',$request->email)->exists();
+        if($exists){
+            if ($request->service == 'google' || $request->service == 'apple') {
+                $user = \App\Models\User::where('email', $request->email)->firstOrFail();
+
+                if ($user) {
+                    $token = $user->createToken('auth')->plainTextToken;
+                    $token = explode('|', $token)[1];
+
+                    $data = [
+                        'access_token' => $token,
+                        'token_type' => 'Bearer',
+                        'ttl' => 315569520,
+                    ];
+
+                    if($request->device_token){
+
+                        User::query()->where('email',$request->email)->update(['device_token' => $request->device_token]);
+
+                    }
+
+                    return result(array_merge($user->toArray(), ['token' => $data]), 200, 'Успешно');
+                }
+
+                return result(null, 422, "Логин или пароль неправильный");
+            }
+        }
+        else{
+                if($request->service == 'google' or $request->service == 'apple'){
+
+                    $dataArray = [
+                        'name'=>$request->name,
+                        'email'=>$request->email,
+                        'password'=>bcrypt(12345),
+                        'device_token'=>$request->device_token ?? null,
+                    ];
+
+                    User::query()->create($dataArray);
+
+                    if (Auth::attempt(['email'=>$request->email,'password'=>12345])) {
+                        $token = request()->user()->createToken('auth')->plainTextToken;
+                        $token = explode('|', $token)[1];
+                        $data = [
+                            'access_token' => $token,
+                            'token_type' => 'Bearer',
+                            'ttl' => 315569520,
+                        ];
+
+
+
+                        $res = array_merge($request->user()->toArray(), ['token' => $data]);
+                        return result($res, 200, 'Успешно');
+                    }else{
+                        return result(false, 200, 'Логин или пароль не правильный');
+                    }
+
+
+
+                }
+
+//                User::query()->create($dataArray);
+
+        }
+    }
+
 
     function logout(Request $request){
 
@@ -194,8 +278,8 @@ if ($request->service == 'google' || $request->service == 'apple') {
 
     function documents(){
         $data = [
-            'privacy_policy'=>'https://skystoreez.com/src/html/pages/privacy-policy.html',
-            'user-agreement'=>'https://skystoreez.com/src/html/pages/user-agreement.html',
+            'privacy_policy'=>'http://77.246.247.60/privacy-policy.html',
+            'user-agreement'=>'http://77.246.247.60//user-agreement.html',
         ];
 
         return result($data,200,'Document list');
@@ -250,11 +334,23 @@ $data = ProductCategory::query()->whereIn('catalog_category_id',[2,5])->get();
     {
         $categoryId = $request->category_id;
 
-        $data = SubCatalog::query()->where('category_id',$categoryId)->get();
+        if($categoryId == 0){
+            $data = SubCatalog::query()->get();
+        }else{
+            $data = SubCatalog::query()->where('category_id',$categoryId)->get();
+        }
+
+
 
         return result($data,200,'SubCategory list by category');
     }
 
+
+    function version()
+    {
+        $data = ['version'=>'1.0.4'];
+        return result($data,200,'Version list');
+    }
 
 }
 

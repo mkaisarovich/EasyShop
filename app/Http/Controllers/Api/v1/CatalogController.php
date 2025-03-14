@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class CatalogController extends Controller
 {
 
-    function index(Shop $shop){
+    function index(){
 
 //        return $shop->id;
 

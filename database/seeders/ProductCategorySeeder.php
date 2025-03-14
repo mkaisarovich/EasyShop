@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\ProductCategory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProductCategorySeeder extends Seeder
 {
@@ -13,6 +14,11 @@ class ProductCategorySeeder extends Seeder
      */
     public function run(): void
     {
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // Disable foreign key checks
+        DB::table('product_categories')->truncate(); // Reset table and IDs
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;'); // Enable foreign key checks
+
         $inits = [
             [
                 'name'=>'Брюки',
@@ -117,7 +123,7 @@ class ProductCategorySeeder extends Seeder
             ],
             [
                 'name'=>'Домашняя обувь',
-                'catalog_category_id'=>4,
+                'catalog_category_id'=>2,
                 'image'=>$this->getAvatarPath('man_shoes/Photo-1.png'),
             ],
             [

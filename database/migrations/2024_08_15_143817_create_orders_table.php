@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->unsignedBigInteger('status_id')->default(1);
             $table->string('product_size')->nullable();
+            $table->unsignedBigInteger('order_complect_id');
             $table->timestamps();
         });
     }

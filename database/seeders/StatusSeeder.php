@@ -26,6 +26,9 @@ class StatusSeeder extends Seeder
             [
                 'name'=>'Продано',
             ],
+            [
+                'name'=>'Отменен',
+            ],
 
         ];
 

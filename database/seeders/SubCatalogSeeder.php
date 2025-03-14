@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\SubCatalog;
+use Illuminate\Support\Facades\DB;
 
 class SubCatalogSeeder extends Seeder
 {
@@ -13,6 +14,13 @@ class SubCatalogSeeder extends Seeder
      */
     public function run(): void
     {
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;'); // Disable foreign key checks
+        DB::table('sub_catalogs')->truncate(); // Reset table and IDs
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;'); // Enable foreign key checks
+
+
+
         $inits = [
             [
                 'name'=>'Джоггеры',
@@ -160,11 +168,11 @@ class SubCatalogSeeder extends Seeder
             ],
             [
                 'name'=>'Футболки и майки',
-                'category_id'=>'5'
+                'category_id'=>'6'
             ],
             [
                 'name'=>'Халаты',
-                'category_id'=>'5'
+                'category_id'=>'6'
             ],
 
 
@@ -190,10 +198,10 @@ class SubCatalogSeeder extends Seeder
                 'name'=>'Трусы',
                 'category_id'=>'8'
             ],
-            [
-                'name'=>'Футболки',
-                'category_id'=>'8'
-            ],
+//            [
+//                'name'=>'Футболки',
+//                'category_id'=>'8'
+//            ],
 
 
             [
@@ -209,7 +217,7 @@ class SubCatalogSeeder extends Seeder
                 'category_id'=>'9'
             ],
 
-
+//
             [
                 'name'=>'Брюки',
                 'category_id'=>'10'

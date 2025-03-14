@@ -8,7 +8,11 @@ use App\Models\FashionImage;
 use App\Models\FashionProduct;
 use App\Models\SubCatalog;
 use App\Models\Order;
+use App\Models\User;
+use App\Notifications\Push;
+use App\Models\ProductColor;
 use App\Models\Product;
+use App\Models\OrderComplect;
 use App\Models\ProductImage;
 use App\Models\ProductSize;
 use App\Services\ShopService;
@@ -78,7 +82,7 @@ class AdminController extends Controller
                 'description'=>$request->description,
                 'shop_id'=>ShopService::shop()->id,
                 'style_id'=>$request->style_id,
-                'color_id'=>$request->color_id,
+//                'color_id'=>$request->color_id,
                 'struture_id'=>$request->structure_id,
                 'season_id'=>$request->season_id,
                 'discount'=>$request->discount,
@@ -102,6 +106,15 @@ class AdminController extends Controller
                             'size_id'=>(int)$request->sizes[$i],
                             'product_id'=>$product->id,
                             'count'=>$request->count[$i]
+                        ]);
+                    }
+                }
+
+                if($request->color_id){
+                    for ($i = 0;$i<sizeof($request->color_id);$i++){
+                        ProductColor::query()->create([
+                            'color_id'=>(int)$request->color_id[$i],
+                            'product_id'=>$product->id,
                         ]);
                     }
                 }
@@ -139,7 +152,7 @@ class AdminController extends Controller
                 'style_id'=>$request->style_id,
                 'struture_id'=>$request->structure_id,
                 'season_id'=>$request->season_id,
-                'discount'=>$request->discount,
+                'discount'=>$request->discount ?? 0,
                 'catalog_category_id'=>$request->catalog_category_id,
                 'product_category_id'=>$request->product_category_id,
                 'price'=>$request->price,
@@ -165,6 +178,16 @@ class AdminController extends Controller
                         $i++;
                     }
                 }
+
+            if($request->color_id){
+                ProductColor::query()->where('product_id',$selledId)->delete();
+                foreach ($request->color_id as $color){
+                    ProductColor::query()->create([
+                        'color_id'=>$color,
+                        'product_id'=>$selledId,
+                    ]);
+                }
+            }
 
                 if($request->images){
                     ProductImage::query()->where('product_id',$selledId)->delete();
@@ -192,32 +215,145 @@ class AdminController extends Controller
         if($type == 'product'){
             switch ($status) {
                 case 'wait':
-                    $data = Order::query()
-                    ->with('product.images','product.season',
-                        'product.style','product.structure','product.catalog_category','product.product_category')
-                        ->where('type','product')
-                        ->where('status_id', 1)
-                        ->where('shop_id', ShopService::shop()->id)
+
+                    $data = OrderComplect::query()->
+                        where('type',$type)
+                        ->with([
+                            'order_unions' => function ($query) {
+                                $query->with([
+                                    'product.images',
+                                    'product.season',
+                                    'product.style',
+                                    'product.structure',
+                                    'product.catalog_category',
+                                    'product.product_category',
+                                    'product.sizes',
+                                    'user',
+                                    'shop'
+                                ])
+                                    ->where('type', 'product')
+                                    ->where('status_id', 1)
+                                    ->where('shop_id', ShopService::shop()->id);
+                            }
+                        ])
                         ->get();
+
+                    $data = $data->filter(function ($item) {
+                        // If the order_unions relationship is empty, exclude the item.
+                        return $item->order_unions->isNotEmpty();
+                    });
+
+                    $data = $data->values();
+
+// If no data remains after filtering, set $data to an empty array.
+                    if ($data->isEmpty()) {
+                        $data = [];
+                    }
+
 
                     break;
                 case 'accept':
-                    $data = Order::query()
-                        ->with('product.images','product.season',
-                            'product.style','product.structure','product.catalog_category','product.product_category')
-                        ->where('type','product')
-                        ->where('status_id', 2)
-                        ->where('shop_id', ShopService::shop()->id)
+                    $data = OrderComplect::query()->
+                    where('type',$type)
+                        ->with([
+                            'order_unions' => function ($query) {
+                                $query->with([
+                                    'product.images',
+                                    'product.season',
+                                    'product.style',
+                                    'product.structure',
+                                    'product.catalog_category',
+                                    'product.product_category',
+                                    'product.sizes',
+                                    'user',
+                                    'shop'
+                                ])
+                                    ->where('type', 'product')
+                                    ->where('status_id', 2)
+                                    ->where('shop_id', ShopService::shop()->id);
+                            }
+                        ])
                         ->get();
+
+                    $data = $data->filter(function ($item) {
+                        // If the order_unions relationship is empty, exclude the item.
+                        return $item->order_unions->isNotEmpty();
+                    });
+
+
+                    $data = $data->values();
+// If no data remains after filtering, set $data to an empty array.
+                    if ($data->isEmpty()) {
+                        $data = [];
+                    }
                     break;
                 case 'ready':
-                    $data = Order::query()
-                        ->with('product.images','product.season',
-                            'product.style','product.structure','product.catalog_category','product.product_category')
-                        ->where('type','product')
-                        ->where('status_id', 3)
-                        ->where('shop_id', ShopService::shop()->id)
+                    $data = OrderComplect::query()->
+                    where('type',$type)
+                        ->with([
+                            'order_unions' => function ($query) {
+                                $query->with([
+                                    'product.images',
+                                    'product.season',
+                                    'product.style',
+                                    'product.structure',
+                                    'product.catalog_category',
+                                    'product.product_category',
+                                    'product.sizes',
+                                    'user',
+                                    'shop'
+                                ])
+                                    ->where('type', 'product')
+                                    ->where('status_id', 3)
+                                    ->where('shop_id', ShopService::shop()->id);
+                            }
+                        ])
                         ->get();
+
+                    $data = $data->filter(function ($item) {
+                        // If the order_unions relationship is empty, exclude the item.
+                        return $item->order_unions->isNotEmpty();
+                    });
+
+                    $data = $data->values();
+// If no data remains after filtering, set $data to an empty array.
+                    if ($data->isEmpty()) {
+                        $data = [];
+                    }
+                    break;
+                case 'completed':
+                    $data = OrderComplect::query()->
+                    where('type',$type)
+                        ->with([
+                            'order_unions' => function ($query) {
+                                $query->with([
+                                    'product.images',
+                                    'product.season',
+                                    'product.style',
+                                    'product.structure',
+                                    'product.catalog_category',
+                                    'product.product_category',
+                                    'product.sizes',
+                                    'user',
+                                    'shop'
+                                ])
+                                    ->where('type', 'product')
+                                    ->where('status_id', 4)
+                                    ->where('shop_id', ShopService::shop()->id);
+                            }
+                        ])
+                        ->get();
+
+                    $data = $data->filter(function ($item) {
+                        // If the order_unions relationship is empty, exclude the item.
+                        return $item->order_unions->isNotEmpty();
+                    });
+
+                    $data = $data->values();
+// If no data remains after filtering, set $data to an empty array.
+                    if ($data->isEmpty()) {
+                        $data = [];
+                    }
                     break;
                 default;
             }
@@ -227,7 +363,7 @@ class AdminController extends Controller
                     $data = Order::query()
                         ->with('fashion.products.images','fashion.products.season','fashion.products.style',
                             'fashion.products.structure','fashion.products.catalog_category',
-                            'fashion.products.product_category')
+                            'fashion.products.product_category','fashion.season','fashion.style','user')
                         ->where('type','fashion')
                         ->where('status_id', 1)
                         ->where('shop_id', ShopService::shop()->id)
@@ -237,7 +373,7 @@ class AdminController extends Controller
                     $data = Order::query()
                         ->with('fashion.products.images','fashion.products.season','fashion.products.style',
                             'fashion.products.structure','fashion.products.catalog_category',
-                            'fashion.products.product_category')
+                            'fashion.products.product_category','fashion.season','fashion.style','user')
                         ->where('type','fashion')
                         ->where('status_id', 2)
                         ->where('shop_id', ShopService::shop()->id)
@@ -247,9 +383,19 @@ class AdminController extends Controller
                     $data = Order::query()
                         ->with('fashion.products.images','fashion.products.season','fashion.products.style',
                             'fashion.products.structure','fashion.products.catalog_category',
-                            'fashion.products.product_category')
+                            'fashion.products.product_category','fashion.season','fashion.style','user')
                         ->where('type','fashion')
                         ->where('status_id', 3)
+                        ->where('shop_id', ShopService::shop()->id)
+                        ->get();
+                    break;
+                case 'completed':
+                    $data = Order::query()
+                        ->with('fashion.products.images','fashion.products.season','fashion.products.style',
+                            'fashion.products.structure','fashion.products.catalog_category',
+                            'fashion.products.product_category','fashion.season','fashion.style','user')
+                        ->where('type','fashion')
+                        ->where('status_id', 4)
                         ->where('shop_id', ShopService::shop()->id)
                         ->get();
                     break;
@@ -266,13 +412,52 @@ class AdminController extends Controller
         switch ($request->status){
             case 'completed':
                 $order->status_id = 4;
+                $title = "Заказ завершен";
+                $body = "Поздравляем! Ваш заказ успешно завершено.";
+                $deviceToken = User::query()->select('device_token')->where('id',$order->user_id)->value('device_token');
+                if($deviceToken == null){
+                    break;
+                }else{
+                    $type = 'done_order_come_to_client';
+                    Push::sendToDevice($deviceToken,$title, $body ,$type);
+                }
                 break;
                 case 'accept':
                     $order->status_id = 2;
+                    $title = "Заказ принят";
+                    $body = "Ваш заказ успешно принято.";
+                    $deviceToken = User::query()->select('device_token')->where('id',$order->user_id)->value('device_token');
+                    if($deviceToken == null){
+                        break;
+                    }else{
+                        $type = 'accept_order_come_to_client';
+                        Push::sendToDevice($deviceToken,$title, $body ,$type);
+                    }
                     break;
                     case 'ready':
                         $order->status_id = 3;
+                        $title = "Заказ готов";
+                        $body = "Ваш заказ готов!.";
+                        $deviceToken = User::query()->select('device_token')->where('id',$order->user_id)->value('device_token');
+                        if($deviceToken == null){
+                            break;
+                        }else{
+                            $type = 'ready_order_come_to_client';
+                            Push::sendToDevice($deviceToken,$title, $body ,$type);
+                        }
                         break;
+                   case 'rejected':
+                $order->status_id = 5;
+                $title = "Заказ отменен";
+                $body = "Ваш заказ отменен продавцом!.";
+                $deviceToken = User::query()->select('device_token')->where('id',$order->user_id)->value('device_token');
+                if($deviceToken == null){
+                    break;
+                }else{
+                    $type = 'reject_order_come_to_client';
+                    Push::sendToDevice($deviceToken,$title, $body ,$type);
+                }
+                break;
                         default;
         }
 
@@ -293,6 +478,7 @@ class AdminController extends Controller
             'discount_price'=>$request->discount != null? (int)$request->price - (((int)$request->price * (int)$request->discount) / 100 ) : null,
             'user_id'=>auth()->id(),
             'is_active'=>1,
+            'is_basket'=>1
         ];
 
         $fashion = Fashion::query()->create($dataArray);

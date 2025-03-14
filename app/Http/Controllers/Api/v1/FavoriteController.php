@@ -7,9 +7,13 @@ use App\Models\Basket;
 use App\Models\Fashion;
 use App\Models\Favorite;
 use App\Models\Order;
+use App\Models\OrderComplect;
+use App\Models\Shop;
+use App\Models\User;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\Push;
 
 class FavoriteController extends Controller
 {
@@ -20,8 +24,8 @@ class FavoriteController extends Controller
         $products = Product::query()
             ->select('products.*', DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                 'product_styles.name as style_name','product_structures.name as structure_name',
-                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name','product_categories.name as product_category_name',)
-            ->with('images', 'sizes')
+                'product_seasons.name as season_name','catalog_categories.name as catalog_category_name','product_categories.name as product_category_name')
+            ->with('images', 'sizes.productSizes')
             ->having('is_favorite', '=', 1)
             ->leftJoin('favorites', function ($join) {
                 $join->on('favorites.favorite_id', '=', 'products.id')
@@ -136,32 +140,63 @@ class FavoriteController extends Controller
         function order(Request $request)
         {
             $selledIds = $request->get('selled_id');
+            $type = $request->get('type');
             $index = 0;
-            foreach ($selledIds as $selledId) {
-                $order = Order::query()->create([
-                    'date' => $request->get('date'),
-                    'user_id' => auth()->user()->id,
-                    'time'=>$request->get('time'),
-                    'type'=>$request->get('type'),
-                    'selled_id'=>$selledId,
-                    'product_size'=>$request->product_size[$index],
-                    'shop_id'=>$request->shop_id[$index]
-                ]);
+            if($selledIds){
 
-                if($order){
-                    if($request->basket_id){
-                        foreach ($request->basket_id as $basket){
-                            Basket::query()->where('id',$basket)->delete();
+                if($type == 'fashion'){
+                    $type = 'order';
+                }
+                $order_complect_id = OrderComplect::query()->create([
+                    'type'=>$type ,
+                ]);
+                foreach ($selledIds as $selledId) {
+                    $order = Order::query()->create([
+                        'date' => $request->get('date'),
+                        'user_id' => auth()->user()->id,
+                        'time'=>$request->get('time'),
+                        'type'=>$request->get('type'),
+                        'selled_id'=>$selledId,
+                        'product_size'=>$request->product_size[$index] ?? null,
+                        'shop_id'=>$request->shop_id[$index],
+                        'order_complect_id'=>$order_complect_id->id,
+                        'delivery_type'=>$request->delivery_type[$index] ?? null,
+                        'address'=>$request->address[$index] ?? null,
+                    ]);
+
+                    if($order){
+                        if($request->basket_id){
+                            foreach ($request->basket_id as $basket){
+                                Basket::query()->where('id',$basket)->delete();
+                            }
                         }
+
                     }
 
+                    $shop = Shop::query()->where('id',$order->shop_id)->first();
+
+                    $title = "Новый заказ";
+                    $body = "Поздравляем! Ваш товар был заказан. Пожалуйста, приступите к его подготовке для отправки.";
+                    $deviceToken = User::query()->select('device_token')->where('id',$shop->user_id)->value('device_token');
+                    if($deviceToken == null){
+                        break;
+                    }else{
+                        $type = 'new_order_come_to_partner';
+                        Push::sendToDevice($deviceToken,$title, $body ,$type);
+                    }
+
+
+
                 }
+
+
+
+
+                return result(true,200,"Success");
+            }else{
+                return result(false,400,'Selled Id not found');
             }
 
-
-
-
-            return result(true,200,"Success");
         }
 
 }

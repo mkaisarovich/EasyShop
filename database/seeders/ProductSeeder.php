@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\ProductSize;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +25,7 @@ class ProductSeeder extends Seeder
 ВНЕШНЯЯ ЧАСТЬ
 100% органический хлопок, сертифицированный OCS',
                 'style_id'=>1,
-                'color_id'=>1,
+//                'color_id'=>1,
                 'struture_id'=>2,
                 'season_id'=>2,
                 'discount'=>0,
@@ -44,7 +45,7 @@ class ProductSeeder extends Seeder
 Мы работаем с программами мониторинга, чтобы гарантировать соблюдение наших стандартов, касающихся социальных и экологических ',
                 'style_id'=>2,
                 'struture_id'=>3,
-                'color_id'=>2,
+//                'color_id'=>2,
                 'season_id'=>2,
                 'discount'=>1,
                 'product_category_id'=>1,
@@ -62,7 +63,7 @@ class ProductSeeder extends Seeder
                 'style_id'=>3,
                 'struture_id'=>2,
                 'season_id'=>2,
-                'color_id'=>3,
+//                'color_id'=>3,
                 'discount'=>1,
                 'product_category_id'=>2,
                 'catalog_category_id'=>1,
@@ -79,7 +80,6 @@ class ProductSeeder extends Seeder
                 'style_id'=>4,
                 'struture_id'=>2,
                 'season_id'=>3,
-                'color_id'=>4,
                 'discount'=>1,
                 'catalog_category_id'=>1,
                 'product_category_id'=>1,
@@ -95,6 +95,41 @@ class ProductSeeder extends Seeder
         ];
 
         Product::insert($inits);
+
+
+
+        $in = [
+            [
+                'product_id'=>1,
+                'size_id'=>1,
+                'count'=>10
+
+            ],
+            [
+                'product_id'=>2,
+                'size_id'=>2,
+                'count'=>10
+            ],
+            [
+                'product_id'=>3,
+                'size_id'=>3,
+                'count'=>10
+
+            ],
+            [
+                'product_id'=>4,
+                'size_id'=>4,
+                'count'=>10
+            ],
+            [
+                'product_id'=>1,
+                'size_id'=>5,
+                'count'=>10
+            ],
+
+        ];
+
+        ProductSize::insert($in);
 
 
 

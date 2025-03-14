@@ -23,7 +23,8 @@ class ShopSeeder extends Seeder
                 'address'=>"ТЦ Mega Almaty, Ул Розыбакиева 247 а",
                 'city_id'=>1,
                 'mall_id'=>1,
-                'avatar'=>$this->getAvatarPath('z3twpjpr444795.jpg')
+                'avatar'=>$this->getAvatarPath('z3twpjpr444795.jpg'),
+                'numeration' => 1
             ],
             [
                 'name'=>'H&M',
@@ -32,7 +33,8 @@ class ShopSeeder extends Seeder
                 'city_id'=>1,
                 'address'=>"ТЦ Mega Almaty, Ул Розыбакиева 247 а",
                 'mall_id'=>1,
-                'avatar'=>$this->getAvatarPath('HM-Share-Image.jpg')
+                'avatar'=>$this->getAvatarPath('HM-Share-Image.jpg'),
+                'numeration' => 2
             ],
 
         ];

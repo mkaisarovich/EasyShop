@@ -18,91 +18,176 @@ class FashionController extends Controller
 
     function index(Request $request)
     {
-        $shopId = $request->get('shop_id');
-        $shop = Shop::query()->findOrFail($shopId);
 
-        $fashions = Fashion::query()
-            ->select('fashions.*', DB::raw('COALESCE(discount_price, price) as effective_price'), DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
-                'product_styles.name as style_name','product_seasons.name as season_name')
-            ->with(['products' => function ($query) {
-                $query->leftJoin('favorites as product_favorites', function ($join) {
-                    $join->on('product_favorites.favorite_id', '=', 'products.id')
-                        ->where('product_favorites.type', '=', 'product')
-                        ->where('product_favorites.user_id', '=', auth()->user()->id);
+        if(auth()->check()){
+            $shopId = $request->get('shop_id');
+            $shop = Shop::query()->findOrFail($shopId);
+
+            $fashions = Fashion::query()
+                ->select('fashions.*', DB::raw('COALESCE(discount_price, price) as effective_price'), DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
+                    'product_styles.name as style_name','product_seasons.name as season_name')
+                ->with(['products' => function ($query) {
+                    $query->leftJoin('favorites as product_favorites', function ($join) {
+                        $join->on('product_favorites.favorite_id', '=', 'products.id')
+                            ->where('product_favorites.type', '=', 'product')
+                            ->where('product_favorites.user_id', '=', auth()->user()->id);
+                    })
+                        ->leftJoin('product_styles', 'products.style_id', '=', 'product_styles.id')
+                        ->leftJoin('product_seasons', 'products.season_id', '=', 'product_seasons.id')
+                        ->leftJoin('product_structures', 'products.struture_id', '=', 'product_structures.id')
+                        ->select('products.*',DB::raw('(product_favorites.id IS NOT NULL) as product_favorite_id'),'product_styles.name as style_name',
+                            'product_seasons.name as season_name','product_structures.name as structure_name')
+                    ->with('images')
+                    ;
+                }])
+                ->with('images')
+                ->where('fashions.shop_id', $shop->id)
+                ->where('fashions.is_active', 1)
+                ->where('fashions.is_basket', 1)
+                ->withCount('products as count_products')
+                ->leftJoin('favorites', function ($join) {
+                    $join->on('favorites.favorite_id', '=', 'fashions.id')
+                        ->where('favorites.type', '=', 'fashion')
+                        ->where('favorites.user_id', '=', auth()->user()->id);
                 })
-                    ->leftJoin('product_styles', 'products.style_id', '=', 'product_styles.id')
-                    ->leftJoin('product_seasons', 'products.season_id', '=', 'product_seasons.id')
-                    ->leftJoin('product_structures', 'products.struture_id', '=', 'product_structures.id')
-                    ->select('products.*',DB::raw('(product_favorites.id IS NOT NULL) as product_favorite_id'),'product_styles.name as style_name',
-                        'product_seasons.name as season_name','product_structures.name as structure_name');
-            }])
-            ->with('images')
-            ->where('fashions.shop_id', $shop->id)
-            ->where('fashions.is_active', 1)
-            ->where('fashions.is_basket', 1)
-            ->withCount('products as count_products')
-            ->leftJoin('favorites', function ($join) {
-                $join->on('favorites.favorite_id', '=', 'fashions.id')
-                    ->where('favorites.type', '=', 'fashion')
-                    ->where('favorites.user_id', '=', auth()->user()->id);
-            })
-            ->leftJoin('product_styles','fashions.style_id','=','product_styles.id')
-            ->leftJoin('product_seasons','fashions.season_id','=','product_seasons.id');
+                ->leftJoin('product_styles','fashions.style_id','=','product_styles.id')
+                ->leftJoin('product_seasons','fashions.season_id','=','product_seasons.id');
 
 
-        $sort_price = $request->get('sort_price');
-        $style_id = $request->get('style_id');
-        $season_id = $request->get('season_id');
+            $sort_price = $request->get('sort_price');
+            $style_id = $request->get('style_id');
+            $season_id = $request->get('season_id');
 
-        $fashions->when($style_id, function ($query, $style_id) {
-            return $query->where('style_id', $style_id);
-        });
-        $fashions->when($season_id, function ($query, $season_id) {
-            return $query->where('season_id', $season_id);
-        });
-        $fashions->when($sort_price, function ($query, $sort_price) {
-            return $query->orderBy('effective_price', $sort_price);
-        });
+            $fashions->when($style_id, function ($query, $style_id) {
+                return $query->where('style_id', $style_id);
+            });
+            $fashions->when($season_id, function ($query, $season_id) {
+                return $query->where('season_id', $season_id);
+            });
+            $fashions->when($sort_price, function ($query, $sort_price) {
+                return $query->orderBy('effective_price', $sort_price);
+            });
 
             $fashions=$fashions->get();
 
-        $fashions->transform(function ($item) {
-            $item->style = [
-                'id' => $item->style_id,
-                'name' => $item->style_name,
-            ];
-            unset($item->style_id, $item->style_name);
-
-            $item->season = [
-                'id' => $item->season_id,
-                'name' => $item->season_name,
-            ];
-            unset($item->season_id, $item->season_name);
-
-            $item->products->transform(function ($product) {
-                $product->style = [
-                    'id' => $product->style_id,
-                    'name' => $product->style_name,
+            $fashions->transform(function ($item) {
+                $item->style = [
+                    'id' => $item->style_id,
+                    'name' => $item->style_name,
                 ];
-                unset($product->style_id, $product->style_name);
+                unset($item->style_id, $item->style_name);
 
-                $product->season = [
-                    'id' => $product->season_id,
-                    'name' => $product->season_name,
+                $item->season = [
+                    'id' => $item->season_id,
+                    'name' => $item->season_name,
                 ];
-                unset($product->season_id, $product->season_name);
+                unset($item->season_id, $item->season_name);
 
-                $product->structure = [
-                    'id' => $product->struture_id,
-                    'name' => $product->structure_name,
-                ];
-                unset($product->struture_id, $product->structure_name);
+                $item->products->transform(function ($product) {
+                    $product->style = [
+                        'id' => $product->style_id,
+                        'name' => $product->style_name,
+                    ];
+                    unset($product->style_id, $product->style_name);
 
-                return $product;
+                    $product->season = [
+                        'id' => $product->season_id,
+                        'name' => $product->season_name,
+                    ];
+                    unset($product->season_id, $product->season_name);
+
+                    $product->structure = [
+                        'id' => $product->struture_id,
+                        'name' => $product->structure_name,
+                    ];
+                    unset($product->struture_id, $product->structure_name);
+
+                    return $product;
+                });
+
+                return $item;
+            });
+        }else{
+            $shopId = $request->get('shop_id');
+            $shop = Shop::query()->findOrFail($shopId);
+
+            $fashions = Fashion::query()
+                ->select('fashions.*', DB::raw('COALESCE(discount_price, price) as effective_price'),
+                    'product_styles.name as style_name','product_seasons.name as season_name')
+                ->with(['products' => function ($query) {
+                    $query
+                        ->leftJoin('product_styles', 'products.style_id', '=', 'product_styles.id')
+                        ->leftJoin('product_seasons', 'products.season_id', '=', 'product_seasons.id')
+                        ->leftJoin('product_structures', 'products.struture_id', '=', 'product_structures.id')
+                        ->select('products.*','product_styles.name as style_name',
+                            'product_seasons.name as season_name','product_structures.name as structure_name')
+                        ->with('images');
+                }])
+                ->with('images')
+                ->where('fashions.shop_id', $shop->id)
+                ->where('fashions.is_active', 1)
+                ->where('fashions.is_basket', 1)
+                ->withCount('products as count_products')
+                ->leftJoin('product_styles','fashions.style_id','=','product_styles.id')
+                ->leftJoin('product_seasons','fashions.season_id','=','product_seasons.id');
+
+
+            $sort_price = $request->get('sort_price');
+            $style_id = $request->get('style_id');
+            $season_id = $request->get('season_id');
+
+            $fashions->when($style_id, function ($query, $style_id) {
+                return $query->where('style_id', $style_id);
+            });
+            $fashions->when($season_id, function ($query, $season_id) {
+                return $query->where('season_id', $season_id);
+            });
+            $fashions->when($sort_price, function ($query, $sort_price) {
+                return $query->orderBy('effective_price', $sort_price);
             });
 
-            return $item;
-        });
+            $fashions=$fashions->get();
+
+            $fashions->transform(function ($item) {
+                $item->style = [
+                    'id' => $item->style_id,
+                    'name' => $item->style_name,
+                ];
+                unset($item->style_id, $item->style_name);
+
+                $item->season = [
+                    'id' => $item->season_id,
+                    'name' => $item->season_name,
+                ];
+                unset($item->season_id, $item->season_name);
+
+                $item->products->transform(function ($product) {
+                    $product->style = [
+                        'id' => $product->style_id,
+                        'name' => $product->style_name,
+                    ];
+                    unset($product->style_id, $product->style_name);
+
+                    $product->season = [
+                        'id' => $product->season_id,
+                        'name' => $product->season_name,
+                    ];
+                    unset($product->season_id, $product->season_name);
+
+                    $product->structure = [
+                        'id' => $product->struture_id,
+                        'name' => $product->structure_name,
+                    ];
+                    unset($product->struture_id, $product->structure_name);
+
+                    return $product;
+                });
+
+                return $item;
+            });
+        }
+
+
 
         return result($fashions,200,'Список образ и капсул');
     }
@@ -145,7 +230,7 @@ class FashionController extends Controller
                     ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                         'product_styles.name as style_name','product_structures.name as structure_name',
                         'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
-                    ->with('images','sizes')
+                    ->with('images','sizes.productSizes')
                     ->where('products.shop_id',$shopId)
 //                    ->where('products.catalog_category_id',$catalog)
                     ->where('products.product_category_id',$categoryId)
@@ -179,7 +264,7 @@ class FashionController extends Controller
                         ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                             'product_styles.name as style_name','product_structures.name as structure_name',
                             'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
-                        ->with('images','sizes')
+                        ->with('images','sizes.productSizes')
                         ->where('products.shop_id',$shopId)
                         ->where('products.product_category_id',$categoryId)
 //                      ->where('products.count','>',0)
@@ -207,7 +292,7 @@ class FashionController extends Controller
                         ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                             'product_styles.name as style_name','product_structures.name as structure_name',
                             'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
-                        ->with('images','sizes')
+                        ->with('images','sizes.productSizes')
                         ->where('products.shop_id',$shopId)
 //                      ->where('products.count','>',0)
                         ->where('products.product_category_id',$categoryId)
@@ -393,7 +478,7 @@ class FashionController extends Controller
 
         foreach ($types as $type){
             $random = Product::query()->
-                with('sizes')->where([
+                with('sizes.productSizes')->where([
                 'type'=> $type,
                 'shop_id'=>$request->get('shop_id'),
                 ])
