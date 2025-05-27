@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
 
-    function index(Request $request,CatalogCategory $catalog)
+    function index(Request $request)
     {
 
-        $catalog = $catalog->id;
+//        $catalog = $catalog->id;
         $shopId = $request->shop_id;
         $type = $request->type;
         $sort_price = $request->sort_price;
@@ -36,11 +36,13 @@ class ProductController extends Controller
         $color_id = $request->color_id;
 
 
-        if(auth()->check()){
+
+        if(auth('sanctum')->check()){
+
 //            dd(123) ;
-            $existsFavoriteSize = FavoriteSize::query()->where('user_id',auth()->user()->id)->exists();
-            if($request->size){
-                if($type == 0){
+            $existsFavoriteSize = FavoriteSize::query()->where('user_id',auth('sanctum')->user()->id)->exists();
+            if($request->sizes){
+                if(!$request->has('product_categories')){
                     //$request->sizes is [1,3,4]
 
                     $sizes = Size::query()
@@ -54,11 +56,11 @@ class ProductController extends Controller
                         ->distinct()
                         ->with('images','sizes','color')
                         ->where('products.shop_id',$shopId)
-                        ->where('products.catalog_category_id',$catalog)
+//                        ->where('products.catalog_category_id',$catalog)
                         ->leftJoin('favorites', function ($join) {
                             $join->on('favorites.favorite_id', '=', 'products.id')
                                 ->where('favorites.type', '=', 'product')
-                                ->where('favorites.user_id', '=', auth()->user()->id);
+                                ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
                         })
 
 //                  ->whereIn('product_colors.color_id', $color_id)
@@ -68,7 +70,7 @@ class ProductController extends Controller
                         ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                         ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                         ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+//                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                         ->whereIn('product_sizes.size_id',$sizes);
 
                     if($discount){
@@ -80,19 +82,20 @@ class ProductController extends Controller
 
                 }
                 else{
+
                     $data = Product::query()
                         ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                             'product_styles.name as style_name','product_structures.name as structure_name',
                             'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
                         ->with('images','sizes','color')
                         ->where('products.shop_id',$shopId)
-                        ->where('products.catalog_category_id',$catalog)
-                        ->where('products.product_category_id',$type)
+//                        ->where('products.catalog_category_id',$catalog)
+                        ->whereIn('products.product_category_id',$request->product_categories)
 //                  ->where('products.count','>',0)
                         ->leftJoin('favorites', function ($join) {
                             $join->on('favorites.favorite_id', '=', 'products.id')
                                 ->where('favorites.type', '=', 'product')
-                                ->where('favorites.user_id', '=', auth()->user()->id);
+                                ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
                         })
 
 //                  ->whereIn('product_colors.color_id', $color_id)
@@ -102,8 +105,8 @@ class ProductController extends Controller
                         ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                         ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                         ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
-                        ->whereIn('product_sizes.size_id',$request->size)
+//                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+                        ->whereIn('product_sizes.size_id',$request->sizes)
                     ;
                     if($discount){
                         $data->whereNotNull('products.discount_price');
@@ -115,18 +118,20 @@ class ProductController extends Controller
                 }
             }
             else{
+
                 if($existsFavoriteSize){
 
 //              return 123;
 
                     $sizes = FavoriteSize::query()
-                        ->where('user_id',auth()->user()->id)
+                        ->where('user_id',auth('sanctum')->user()->id)
                         ->pluck('size_id')
                         ->toArray();
 
 //              return $sizes;
 
-                    if($type == 0){
+                    if(!$request->has('product_categories')){
+
                         $data = Product::query()
                             ->select('products.*',DB::raw('(favorites.id IS NOT NULL) as is_favorite'),
                                 'product_styles.name as style_name','product_structures.name as structure_name',
@@ -134,13 +139,13 @@ class ProductController extends Controller
                             ->distinct()
                             ->with('images','sizes','color')
                             ->where('products.shop_id',$shopId)
-                            ->where('products.catalog_category_id',$catalog)
+//                            ->where('products.catalog_category_id',$catalog)
 //                      ->where('products.count','>',0)
                             ->whereIn('product_sizes.size_id',$sizes)
                             ->leftJoin('favorites', function ($join) {
                                 $join->on('favorites.favorite_id', '=', 'products.id')
                                     ->where('favorites.type', '=', 'product')
-                                    ->where('favorites.user_id', '=', auth()->user()->id);
+                                    ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
                             })
 //                      ->whereIn('product_colors.color_id', $color_id)
                             ->leftJoin('product_colors', 'products.id', '=', 'product_colors.product_id')
@@ -148,8 +153,8 @@ class ProductController extends Controller
                             ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                             ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                             ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
-                            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+                            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id');
+//                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
                         if($discount){
                             $data->whereNotNull('products.discount_price');
                         }
@@ -165,13 +170,13 @@ class ProductController extends Controller
                                 'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
                             ->with('images','sizes','color')
                             ->where('products.shop_id',$shopId)
-                            ->where('products.catalog_category_id',$catalog)
-                            ->where('products.product_category_id',$type)
+//                            ->where('products.catalog_category_id',$catalog)
+                            ->whereIn('products.product_category_id',$request->product_categories)
 //                      ->where('products.count','>',0)
                             ->leftJoin('favorites', function ($join) {
                                 $join->on('favorites.favorite_id', '=', 'products.id')
                                     ->where('favorites.type', '=', 'product')
-                                    ->where('favorites.user_id', '=', auth()->user()->id);
+                                    ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
                             })
                             ->whereIn('product_sizes.size_id',$sizes)
 //                      ->whereIn('product_colors.color_id', $color_id)
@@ -181,7 +186,7 @@ class ProductController extends Controller
                             ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                             ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                             ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+//                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                         ;
                         if($discount){
                             $data->whereNotNull('products.discount_price');
@@ -193,7 +198,7 @@ class ProductController extends Controller
                     }
                 }
                 else{
-                    if($type == 0){
+                    if(!$request->has('product_categories')){
 
 
                         $data = Product::query()
@@ -203,12 +208,12 @@ class ProductController extends Controller
                             ->distinct()
                             ->with('images','sizes','color')
                             ->where('products.shop_id',$shopId)
-                            ->where('products.catalog_category_id',$catalog)
+//                            ->where('products.catalog_category_id',$catalog)
 //                      ->where('products.count','>',0)
                             ->leftJoin('favorites', function ($join) {
                                 $join->on('favorites.favorite_id', '=', 'products.id')
                                     ->where('favorites.type', '=', 'product')
-                                    ->where('favorites.user_id', '=', auth()->user()->id);
+                                    ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
                             })
 
 //                      ->when(!empty($color_id), function ($query) use ($color_id) {
@@ -218,8 +223,8 @@ class ProductController extends Controller
                             ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                             ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                             ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
-                            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+                            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id');
+//                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
                         if($discount){
                             $data->whereNotNull('products.discount_price');
                         }
@@ -240,14 +245,14 @@ class ProductController extends Controller
                                 'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
                             ->with('images','sizes','color')
                             ->where('products.shop_id',$shopId)
-                            ->where('products.catalog_category_id',$catalog)
+//                            ->where('products.catalog_category_id',$catalog)
 
 //                      ->where('products.count','>',0)
-                            ->where('products.product_category_id',$type)
+                            ->whereIn('products.product_category_id',$request->product_categories)
                             ->leftJoin('favorites', function ($join) {
                                 $join->on('favorites.favorite_id', '=', 'products.id')
                                     ->where('favorites.type', '=', 'product')
-                                    ->where('favorites.user_id', '=', auth()->user()->id);
+                                    ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
                             })
 //                      ->whereIn('product_colors.color_id', $color_id)
                             ->leftJoin('product_colors', 'products.id', '=', 'product_colors.product_id')
@@ -255,7 +260,7 @@ class ProductController extends Controller
                             ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                             ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                             ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+//                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                         ;
                         if($discount){
                             $data->whereNotNull('products.discount_price');
@@ -265,8 +270,9 @@ class ProductController extends Controller
                 }
             }
         }else{
-            if($request->size){
-                if($type == 0){
+
+            if($request->sizes){
+                if(!$request->has('product_categories')){
                     //$request->sizes is [1,3,4]
 
                     $data = Product::query()
@@ -276,17 +282,17 @@ class ProductController extends Controller
                         ->distinct()
                         ->with('images','sizes','color')
                         ->where('products.shop_id',$shopId)
-                        ->where('products.catalog_category_id',$catalog)
+//                        ->where('products.catalog_category_id',$catalog)
 
-                        ->whereIn('product_sizes.size_id',$request->size)
+                        ->whereIn('product_sizes.size_id',$request->sizes)
 //                  ->whereIn('product_colors.color_id', $color_id)
                         ->leftJoin('product_colors', 'products.id', '=', 'product_colors.product_id')
                         ->leftJoin('product_sizes', 'products.id', '=', 'product_sizes.product_id')
                         ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                         ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                         ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
-                        ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+                        ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id');
+//                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
 
                     if($discount){
                         $data->whereNotNull('products.discount_price');
@@ -303,10 +309,10 @@ class ProductController extends Controller
                             'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
                         ->with('images','sizes','color')
                         ->where('products.shop_id',$shopId)
-                        ->where('products.catalog_category_id',$catalog)
-                        ->where('products.product_category_id',$type)
+//                        ->where('products.catalog_category_id',$catalog)
+                        ->whereIn('products.product_category_id',$request->product_categories)
 //                  ->where('products.count','>',0)
-                        ->whereIn('product_sizes.size_id',$request->size)
+                        ->whereIn('product_sizes.size_id',$request->sizes)
 //                  ->whereIn('product_colors.color_id', $color_id)
                         ->leftJoin('product_colors', 'products.id', '=', 'product_colors.product_id')
                         ->leftJoin('product_sizes', 'products.id', '=', 'product_sizes.product_id')
@@ -314,7 +320,7 @@ class ProductController extends Controller
                         ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                         ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                         ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+//                        ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                     ;
                     if($discount){
                         $data->whereNotNull('products.discount_price');
@@ -326,7 +332,7 @@ class ProductController extends Controller
                 }
             }
             else{
-                    if($type == 0){
+                if(!$request->has('product_categories')){
 
                         $data = Product::query()
                             ->select(DB::raw('DISTINCT products.id'),'products.*',
@@ -335,13 +341,13 @@ class ProductController extends Controller
                             ->distinct()
                             ->with('images','sizes','color')
                             ->where('products.shop_id',$shopId)
-                            ->where('products.catalog_category_id',$catalog)
+//                            ->where('products.catalog_category_id',$catalog)
                             ->leftJoin('product_colors', 'products.id', '=', 'product_colors.product_id')
                             ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                             ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                             ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
-                            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
+                            ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id');
+//                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id');
                         if($discount){
                             $data->whereNotNull('products.discount_price');
                         }
@@ -354,17 +360,17 @@ class ProductController extends Controller
                                 'product_seasons.name as season_name','catalog_categories.name as catalog_category_name')
                             ->with('images','sizes','color')
                             ->where('products.shop_id',$shopId)
-                            ->where('products.catalog_category_id',$catalog)
+//                            ->where('products.catalog_category_id',$catalog)
 
 //                      ->where('products.count','>',0)
-                            ->where('products.product_category_id',$type)
+                            ->whereIn('products.product_category_id',$request->product_categories)
 //                      ->whereIn('product_colors.color_id', $color_id)
                             ->leftJoin('product_colors', 'products.id', '=', 'product_colors.product_id')
                             ->leftJoin('product_styles','products.style_id','=','product_styles.id')
                             ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
                             ->leftJoin('product_seasons','products.season_id','=','product_seasons.id')
                             ->leftJoin('catalog_categories','products.catalog_category_id','=','catalog_categories.id')
-                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
+//                            ->leftJoin('product_categories','products.product_category_id','=','product_categories.id')
                         ;
                         if($discount){
                             $data->whereNotNull('products.discount_price');
@@ -399,7 +405,9 @@ class ProductController extends Controller
          if($seasonId){
              $data->where('products.season_id',$seasonId);
          }
-         if($priceFrom and $priceTo){
+
+         if($request->has('price_from') && $request->has('price_to')){
+
              $data->whereBetween('products.price',[$priceFrom,$priceTo]);
          }
 //        if($request->color_id){
@@ -457,22 +465,22 @@ class ProductController extends Controller
 
 
         $data = ProductCategory::query()
-            ->select('product_categories.*','products.shop_id')
+            ->select('product_categories.*')
             ->where('product_categories.catalog_category_id',$request->catalog_category_id);
 
-            if($request->has('shop_id') ){
+            if(isset($request->shop_id) ){
                 $data->leftJoin('products','products.product_category_id','=','product_categories.id')
                 ->where('products.shop_id',$request->shop_id)
 //                ->where('products.subcatalog_id',$request->subcatalog_id);
                 ;
             }
-            $data=$data->get();
+            $data=$data->distinct()->get();
 
         return result($data,200,'Category list');
 
     }
 
-    function show(CatalogCategory $catalog,Product $product)
+    function show(Product $product)
     {
 
       $data = Product::query()
@@ -484,7 +492,7 @@ class ProductController extends Controller
           ->leftJoin('favorites', function ($join) {
               $join->on('favorites.favorite_id', '=', 'products.id')
                   ->where('favorites.type', '=', 'product')
-                  ->where('favorites.user_id', '=', auth()->user()->id);
+                  ->where('favorites.user_id', '=', auth('sanctum')->user()->id);
           })
           ->leftJoin('product_styles','products.style_id','=','product_styles.id')
           ->leftJoin('product_structures','products.struture_id','=','product_structures.id')
@@ -551,7 +559,7 @@ class ProductController extends Controller
         return result($data,200,'Filter list');
     }
 
-    function basket(Request $request,CatalogCategory $catalog,Product $product)
+    function basket(Request $request,Product $product)
     {
         Basket::query()->create([
             'product_id'=>$product->id,

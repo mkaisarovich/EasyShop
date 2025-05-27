@@ -25,7 +25,8 @@ class CatalogController extends Controller
         $data = [
             'Женщины'=>CatalogCategory::query()->where('gender_id',1)->get(),
             'Мужчины'=>CatalogCategory::query()->where('gender_id',2)->get(),
-            'Дети'=>CatalogCategory::query()->where('gender_id',3)->get(),
+            'Девочкам'=>CatalogCategory::query()->where('gender_id',3)->get(),
+            'Мальчикам'=>CatalogCategory::query()->where('gender_id',4)->get(),
         ];
 
         return result($data,200,'Catalog List');

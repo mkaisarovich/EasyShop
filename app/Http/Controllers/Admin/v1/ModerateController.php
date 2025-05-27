@@ -15,7 +15,7 @@ class ModerateController extends Controller
             ->select('users.*','shops.moderate','shops.id as shop_id')
             ->leftJoin('shops', 'shops.user_id', '=', 'users.id')
             ->where('users.role','partner')
-            ->where('shops.moderate',1)
+//            ->where('shops.moderate',1)
             ->get();
 //        return $data;
         return view('admin.pages.super_admin.moderate.index', compact('data'));

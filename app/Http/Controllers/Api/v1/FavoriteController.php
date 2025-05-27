@@ -8,7 +8,9 @@ use App\Models\Fashion;
 use App\Models\Favorite;
 use App\Models\Order;
 use App\Models\OrderComplect;
+use App\Models\ProductSize;
 use App\Models\Shop;
+use App\Models\Size;
 use App\Models\User;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -174,6 +176,12 @@ class FavoriteController extends Controller
                     }
 
                     $shop = Shop::query()->where('id',$order->shop_id)->first();
+
+                    if($request->get('type') == 'product'){
+                        $sizeId = Size::query()->select('id')->where('name',$request->product_size[$index])->value('id');
+                        ProductSize::query()->where('product_id',$selledId)->where('size_id',$sizeId)->decrement('count', 1);
+                    }
+
 
                     $title = "Новый заказ";
                     $body = "Поздравляем! Ваш товар был заказан. Пожалуйста, приступите к его подготовке для отправки.";

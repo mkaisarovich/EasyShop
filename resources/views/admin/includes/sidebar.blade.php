@@ -66,6 +66,15 @@
                         </li>
 
                 <li class="nav-item">
+                    <a href="{{route('admin.super_admin.categories.')}}" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Категорий
+                        </p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="{{route('admin.super_admin.orders.')}}" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>

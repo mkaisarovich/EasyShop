@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\v1\ModerateController;
 use App\Http\Controllers\Admin\v1\OrderController;
 use App\Http\Controllers\Admin\v1\PartnerController;
 use App\Http\Controllers\Admin\v1\UserController;
+use App\Http\Controllers\Admin\v1\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -90,4 +91,16 @@ Route::group(['prefix' => 'super_admin','as' => 'super_admin.', 'middleware' => 
         Route::delete('/styles/delete/{style}', [\App\Http\Controllers\Admin\v1\FilterController::class, 'stylesDelete'])->name('styles.delete');
     });
 
+    Route::group(['prefix' => 'categories', 'as' => 'categories.'], function () {
+        Route::get('/', [CategoryController::class, 'index']);
+        Route::post('/create', [CategoryController::class, 'create'])->name('create');
+        Route::delete('/destroy/{category}', [CategoryController::class, 'delete'])->name('destroy');
+        Route::put('/edit/{category}', [CategoryController::class, 'edit'])->name('edit');
+        Route::get('show/{category}', [CategoryController::class, 'show'])->name('show');
+        Route::post('subcatalog/create', [CategoryController::class, 'createCatalog'])->name('catalog.create');
+        Route::delete('subcatalog/destroy/{catalog}', [CategoryController::class, 'destroyCatalog'])->name('catalog.destroy');
+        Route::put('subcatalog/edit/{catalog}', [CategoryController::class, 'editCatalog'])->name('catalog.edit');
+    });
+    
+    
 });

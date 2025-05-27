@@ -23,10 +23,10 @@ class AdminController extends Controller
 {
     function indexProducts(Request $request){
         $products = Product::query()->with('images','sizes.productSizes','season','structure','style','catalog_category','product_category','subcatalog','color')
-            ->where(['shop_id'=>ShopService::shop()->id,'status'=>$request->status]);
+            ->where(['shop_id'=>ShopService::shop()->id ?? null,'status'=>$request->status]);
         $fashions = Fashion::query()->with('products','images','products.season','products.structure','products.style','products.catalog_category','products.product_category')
             ->where(['status'=>$request->status,'is_basket'=>1])
-            ->withCount('products as count_products')->where(['shop_id'=>ShopService::shop()->id]);
+            ->withCount('products as count_products')->where(['shop_id'=>ShopService::shop()->id ?? null]);
 
         if($request->has('search')){
             $products->where('articul', 'like', '%' . $request->search . '%');
@@ -91,7 +91,7 @@ class AdminController extends Controller
                 'price'=>$request->price,
                 'discount_price'=>$request->discount != null? (int)$request->price - (((int)$request->price * (int)$request->discount) / 100 ) : null,
                 'type'=>$request->product_type,
-                'subcatalog_id'=>$request->subcatalog_id,
+                'subcatalog_id'=>$request->subcatalog_id ?? null,
                 'articul'=>$request->articul,
                 'discount'=>$request->discount_price != null ? 1 : 0
 //                'count'=>10
@@ -158,7 +158,7 @@ class AdminController extends Controller
                 'price'=>$request->price,
                 'discount_price'=>$request->discount_price,
                 'type'=>$request->product_type,
-                'subcatalog_id'=>$request->subcatalog_id,
+                'subcatalog_id'=>$request->subcatalog_id ?? null,
                 'articul'=>$request->articul
 //                'count'=>10
             ];

@@ -45,6 +45,9 @@ Route::prefix('auth')->group(function (){
 
 Route::get('/malls', [ShopController::class, 'malls']);
 
+Route::get('/filter_catalog', [ShopController::class, 'filterCatalog']);
+Route::get('/filter_category', [ShopController::class, 'filterCategory']);
+
 Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
 
     Route::prefix('shops')->group(function () {
@@ -72,9 +75,9 @@ Route::middleware(['auth:sanctum'])->prefix("client")->group(function () {
     Route::prefix('catalog')->group(function () {
         Route::get('/filter', [ProductController::class, 'filter'])->withoutMiddleware('auth:sanctum');
         Route::get('/category', [ProductController::class, 'getCategory'])->withoutMiddleware('auth:sanctum');
-        Route::get('/{catalog}/products', [ProductController::class, 'index'])->withoutMiddleware('auth:sanctum');
-        Route::get('/{catalog}/products/{product}', [ProductController::class, 'show'])->withoutMiddleware('auth:sanctum');
-        Route::post('/{catalog}/products/{product}', [ProductController::class, 'basket']);
+        Route::get('/products', [ProductController::class, 'index'])->withoutMiddleware('auth:sanctum');
+        Route::get('/products/{product}', [ProductController::class, 'show'])->withoutMiddleware('auth:sanctum');
+        Route::post('/products/{product}', [ProductController::class, 'basket']);
     });
 
 
